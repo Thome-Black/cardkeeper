@@ -3,19 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="theme-color" content="#0a0a0f">
+    <meta name="theme-color" content="#ffffff">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>CardKeeper — Все карты в одном месте</title>
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <title>CardKeeper</title>
     <link rel="manifest" href="manifest.json">
     <link rel="apple-touch-icon" href="icon-192.png">
     
-    <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     
-    <!-- Libraries -->
     <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
     
@@ -28,51 +26,53 @@
         }
 
         :root {
-            --bg-primary: #0a0a0f;
-            --bg-secondary: #12121a;
-            --bg-card: #1a1a24;
-            --bg-elevated: #222230;
-            --text-primary: #f4f4f6;
-            --text-secondary: #8888a0;
-            --text-muted: #555566;
-            --accent: #6366f1;
-            --accent-glow: rgba(99, 102, 241, 0.3);
-            --success: #22c55e;
-            --danger: #ef4444;
-            --border: rgba(255, 255, 255, 0.06);
+            --bg-primary: #f8f9fa;
+            --bg-secondary: #ffffff;
+            --bg-card: #ffffff;
+            --bg-elevated: #f1f3f4;
+            --text-primary: #1a1a1a;
+            --text-secondary: #5f6368;
+            --text-muted: #9aa0a6;
+            --accent: #1a73e8;
+            --accent-light: #e8f0fe;
+            --accent-glow: rgba(26, 115, 232, 0.2);
+            --success: #34a853;
+            --danger: #ea4335;
+            --warning: #fbbc04;
+            --border: rgba(0, 0, 0, 0.08);
+            --shadow: 0 1px 3px rgba(0,0,0,0.1), 0 1px 2px rgba(0,0,0,0.06);
+            --shadow-lg: 0 4px 12px rgba(0,0,0,0.1);
             --radius: 16px;
-            --radius-sm: 10px;
-            --shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+            --radius-sm: 12px;
+        }
+
+        [data-theme="dark"] {
+            --bg-primary: #121212;
+            --bg-secondary: #1e1e1e;
+            --bg-card: #252525;
+            --bg-elevated: #2d2d2d;
+            --text-primary: #e8eaed;
+            --text-secondary: #9aa0a6;
+            --text-muted: #6e6e6e;
+            --accent: #8ab4f8;
+            --accent-light: #1e3a5f;
+            --accent-glow: rgba(138, 180, 248, 0.2);
+            --border: rgba(255, 255, 255, 0.1);
+            --shadow: 0 1px 3px rgba(0,0,0,0.3);
+            --shadow-lg: 0 4px 12px rgba(0,0,0,0.4);
         }
 
         body {
-            font-family: 'Outfit', -apple-system, sans-serif;
+            font-family: 'Inter', -apple-system, sans-serif;
             background: var(--bg-primary);
             color: var(--text-primary);
             min-height: 100vh;
             min-height: 100dvh;
             overflow-x: hidden;
-            position: relative;
-        }
-
-        /* Background gradient mesh */
-        body::before {
-            content: '';
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 60vh;
-            background: 
-                radial-gradient(ellipse 80% 50% at 20% 0%, rgba(99, 102, 241, 0.15) 0%, transparent 50%),
-                radial-gradient(ellipse 60% 40% at 80% 10%, rgba(139, 92, 246, 0.1) 0%, transparent 50%);
-            pointer-events: none;
-            z-index: 0;
+            transition: background 0.3s, color 0.3s;
         }
 
         .app {
-            position: relative;
-            z-index: 1;
             max-width: 480px;
             margin: 0 auto;
             padding: 0 16px;
@@ -81,11 +81,12 @@
 
         /* Header */
         .header {
-            padding: 24px 0 16px;
+            padding: 20px 0 16px;
             position: sticky;
             top: 0;
-            background: linear-gradient(to bottom, var(--bg-primary) 60%, transparent);
+            background: var(--bg-primary);
             z-index: 100;
+            transition: background 0.3s;
         }
 
         .header-content {
@@ -101,30 +102,38 @@
         }
 
         .logo-icon {
-            width: 36px;
-            height: 36px;
-            background: linear-gradient(135deg, var(--accent), #8b5cf6);
-            border-radius: 10px;
+            width: 40px;
+            height: 40px;
+            background: var(--accent);
+            border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 18px;
+        }
+
+        .logo-icon svg {
+            width: 24px;
+            height: 24px;
+            color: white;
+        }
+
+        [data-theme="dark"] .logo-icon {
+            background: var(--accent-light);
+        }
+
+        [data-theme="dark"] .logo-icon svg {
+            color: var(--accent);
         }
 
         .logo-text {
-            font-weight: 600;
-            font-size: 20px;
+            font-weight: 700;
+            font-size: 22px;
             letter-spacing: -0.5px;
         }
 
-        .header-actions {
-            display: flex;
-            gap: 8px;
-        }
-
-        .icon-btn {
-            width: 40px;
-            height: 40px;
+        .theme-toggle {
+            width: 44px;
+            height: 44px;
             border: none;
             background: var(--bg-card);
             border-radius: var(--radius-sm);
@@ -134,17 +143,23 @@
             align-items: center;
             justify-content: center;
             transition: all 0.2s;
+            box-shadow: var(--shadow);
         }
 
-        .icon-btn:hover {
+        .theme-toggle:hover {
             background: var(--bg-elevated);
             color: var(--text-primary);
         }
 
-        .icon-btn svg {
-            width: 20px;
-            height: 20px;
+        .theme-toggle svg {
+            width: 22px;
+            height: 22px;
         }
+
+        .theme-toggle .sun { display: none; }
+        .theme-toggle .moon { display: block; }
+        [data-theme="dark"] .theme-toggle .sun { display: block; }
+        [data-theme="dark"] .theme-toggle .moon { display: none; }
 
         /* Search */
         .search-container {
@@ -153,7 +168,7 @@
 
         .search-input {
             width: 100%;
-            padding: 14px 16px 14px 44px;
+            padding: 14px 16px 14px 48px;
             background: var(--bg-card);
             border: 1px solid var(--border);
             border-radius: var(--radius);
@@ -162,6 +177,7 @@
             font-size: 15px;
             outline: none;
             transition: all 0.2s;
+            box-shadow: var(--shadow);
         }
 
         .search-input::placeholder {
@@ -179,7 +195,7 @@
 
         .search-icon {
             position: absolute;
-            left: 14px;
+            left: 16px;
             top: 50%;
             transform: translateY(-50%);
             color: var(--text-muted);
@@ -187,17 +203,13 @@
             height: 20px;
         }
 
-        /* Cards Grid */
-        .cards-section {
-            margin-bottom: 24px;
-        }
-
+        /* Cards */
         .section-title {
             font-size: 13px;
-            font-weight: 500;
+            font-weight: 600;
             color: var(--text-muted);
             text-transform: uppercase;
-            letter-spacing: 1px;
+            letter-spacing: 0.5px;
             margin-bottom: 12px;
         }
 
@@ -206,17 +218,17 @@
             gap: 12px;
         }
 
-        /* Card Item */
         .card-item {
             background: var(--bg-card);
             border: 1px solid var(--border);
             border-radius: var(--radius);
             padding: 16px;
             cursor: pointer;
-            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: all 0.2s ease;
             display: flex;
             align-items: center;
             gap: 14px;
+            box-shadow: var(--shadow);
             position: relative;
             overflow: hidden;
         }
@@ -233,8 +245,7 @@
 
         .card-item:hover {
             transform: translateY(-2px);
-            box-shadow: var(--shadow);
-            border-color: rgba(255, 255, 255, 0.1);
+            box-shadow: var(--shadow-lg);
         }
 
         .card-item:active {
@@ -242,15 +253,15 @@
         }
 
         .card-logo {
-            width: 48px;
-            height: 48px;
+            width: 50px;
+            height: 50px;
             background: var(--bg-elevated);
             border-radius: var(--radius-sm);
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 20px;
-            font-weight: 600;
+            font-weight: 700;
             color: var(--card-color, var(--accent));
             flex-shrink: 0;
         }
@@ -261,7 +272,7 @@
         }
 
         .card-name {
-            font-weight: 500;
+            font-weight: 600;
             font-size: 16px;
             margin-bottom: 4px;
             white-space: nowrap;
@@ -270,7 +281,7 @@
         }
 
         .card-number {
-            font-family: 'JetBrains Mono', monospace;
+            font-family: 'SF Mono', 'Roboto Mono', monospace;
             font-size: 13px;
             color: var(--text-secondary);
         }
@@ -299,12 +310,18 @@
             align-items: center;
             justify-content: center;
             margin: 0 auto 20px;
-            font-size: 36px;
+            box-shadow: var(--shadow);
+        }
+
+        .empty-icon svg {
+            width: 36px;
+            height: 36px;
+            color: var(--text-muted);
         }
 
         .empty-title {
             font-size: 18px;
-            font-weight: 500;
+            font-weight: 600;
             margin-bottom: 8px;
         }
 
@@ -321,13 +338,12 @@
             right: 24px;
             width: 60px;
             height: 60px;
-            background: linear-gradient(135deg, var(--accent), #8b5cf6);
+            background: var(--accent);
             border: none;
             border-radius: 50%;
             color: white;
-            font-size: 28px;
             cursor: pointer;
-            box-shadow: 0 4px 20px var(--accent-glow);
+            box-shadow: 0 4px 12px var(--accent-glow);
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             z-index: 1000;
             display: flex;
@@ -335,9 +351,20 @@
             justify-content: center;
         }
 
+        [data-theme="dark"] .fab {
+            background: var(--accent);
+            color: #121212;
+        }
+
+        .fab svg {
+            width: 28px;
+            height: 28px;
+            pointer-events: none;
+        }
+
         .fab:hover {
             transform: scale(1.1);
-            box-shadow: 0 6px 30px var(--accent-glow);
+            box-shadow: 0 6px 20px var(--accent-glow);
         }
 
         .fab:active {
@@ -348,8 +375,8 @@
         .modal-overlay {
             position: fixed;
             inset: 0;
-            background: rgba(0, 0, 0, 0.8);
-            backdrop-filter: blur(8px);
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(4px);
             z-index: 2000;
             opacity: 0;
             visibility: hidden;
@@ -371,7 +398,7 @@
             z-index: 2001;
             transform: translateY(100%);
             transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            max-height: 90vh;
+            max-height: 92vh;
             overflow-y: auto;
         }
 
@@ -380,11 +407,12 @@
         }
 
         .modal-handle {
-            width: 40px;
+            width: 36px;
             height: 4px;
             background: var(--text-muted);
             border-radius: 2px;
             margin: 12px auto;
+            opacity: 0.5;
         }
 
         .modal-header {
@@ -397,20 +425,26 @@
 
         .modal-title {
             font-size: 18px;
-            font-weight: 600;
+            font-weight: 700;
         }
 
         .modal-close {
-            width: 32px;
-            height: 32px;
+            width: 36px;
+            height: 36px;
             border: none;
-            background: var(--bg-card);
+            background: var(--bg-elevated);
             border-radius: 50%;
             color: var(--text-secondary);
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
+            transition: all 0.2s;
+        }
+
+        .modal-close:hover {
+            background: var(--border);
+            color: var(--text-primary);
         }
 
         .modal-content {
@@ -421,7 +455,7 @@
         .scanner-container {
             width: 100%;
             aspect-ratio: 1;
-            background: var(--bg-primary);
+            background: #000;
             border-radius: var(--radius);
             overflow: hidden;
             position: relative;
@@ -448,11 +482,11 @@
         }
 
         .scanner-frame {
-            width: 70%;
-            aspect-ratio: 1.5;
-            border: 2px solid var(--accent);
+            width: 75%;
+            aspect-ratio: 1.6;
+            border: 3px solid var(--accent);
             border-radius: 12px;
-            box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.5);
+            box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.6);
             position: relative;
         }
 
@@ -468,14 +502,77 @@
         }
 
         @keyframes scan {
-            0%, 100% { top: 20%; opacity: 0.5; }
-            50% { top: 80%; opacity: 1; }
+            0%, 100% { top: 15%; opacity: 0.5; }
+            50% { top: 85%; opacity: 1; }
         }
 
         .scanner-hint {
             text-align: center;
             color: var(--text-secondary);
             font-size: 14px;
+            margin-bottom: 16px;
+        }
+
+        /* Scanned Preview */
+        .scanned-preview {
+            background: var(--bg-card);
+            border: 2px solid var(--success);
+            border-radius: var(--radius);
+            padding: 20px;
+            margin-bottom: 16px;
+        }
+
+        .scanned-preview-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 16px;
+            color: var(--success);
+            font-weight: 600;
+        }
+
+        .scanned-preview-header svg {
+            width: 20px;
+            height: 20px;
+        }
+
+        .scanned-barcode {
+            background: white;
+            padding: 16px;
+            border-radius: var(--radius-sm);
+            margin-bottom: 12px;
+        }
+
+        .scanned-barcode svg {
+            max-width: 100%;
+            height: auto;
+        }
+
+        .rescan-btn {
+            width: 100%;
+            padding: 10px;
+            background: var(--bg-elevated);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            color: var(--text-secondary);
+            font-family: inherit;
+            font-size: 14px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: all 0.2s;
+        }
+
+        .rescan-btn:hover {
+            background: var(--border);
+            color: var(--text-primary);
+        }
+
+        .rescan-btn svg {
+            width: 18px;
+            height: 18px;
         }
 
         /* Form */
@@ -486,7 +583,7 @@
         .form-label {
             display: block;
             font-size: 13px;
-            font-weight: 500;
+            font-weight: 600;
             color: var(--text-secondary);
             margin-bottom: 8px;
         }
@@ -510,23 +607,25 @@
         }
 
         .form-input.mono {
-            font-family: 'JetBrains Mono', monospace;
+            font-family: 'SF Mono', 'Roboto Mono', monospace;
+            letter-spacing: 0.5px;
         }
 
         /* Color Picker */
         .color-picker {
             display: flex;
-            gap: 8px;
+            gap: 10px;
             flex-wrap: wrap;
         }
 
         .color-option {
-            width: 36px;
-            height: 36px;
+            width: 40px;
+            height: 40px;
             border-radius: 50%;
             border: 3px solid transparent;
             cursor: pointer;
             transition: all 0.2s;
+            position: relative;
         }
 
         .color-option:hover {
@@ -537,7 +636,20 @@
             border-color: var(--text-primary);
         }
 
-        /* Barcode Type Selector */
+        .color-option.selected::after {
+            content: '✓';
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+        }
+
+        /* Barcode Types */
         .barcode-types {
             display: flex;
             gap: 8px;
@@ -545,18 +657,21 @@
         }
 
         .barcode-type {
-            padding: 8px 14px;
+            padding: 10px 16px;
             background: var(--bg-card);
             border: 1px solid var(--border);
-            border-radius: 20px;
+            border-radius: 24px;
             color: var(--text-secondary);
+            font-family: inherit;
             font-size: 13px;
+            font-weight: 500;
             cursor: pointer;
             transition: all 0.2s;
         }
 
         .barcode-type:hover {
             border-color: var(--accent);
+            color: var(--accent);
         }
 
         .barcode-type.selected {
@@ -565,19 +680,27 @@
             color: white;
         }
 
+        [data-theme="dark"] .barcode-type.selected {
+            color: #121212;
+        }
+
         /* Button */
         .btn {
             width: 100%;
             padding: 16px;
-            background: linear-gradient(135deg, var(--accent), #8b5cf6);
+            background: var(--accent);
             border: none;
             border-radius: var(--radius-sm);
             color: white;
             font-family: inherit;
             font-size: 16px;
-            font-weight: 500;
+            font-weight: 600;
             cursor: pointer;
             transition: all 0.2s;
+        }
+
+        [data-theme="dark"] .btn {
+            color: #121212;
         }
 
         .btn:hover {
@@ -592,15 +715,16 @@
         }
 
         .btn-secondary {
-            background: var(--bg-card);
-            border: 1px solid var(--border);
+            background: var(--bg-elevated);
+            color: var(--text-primary);
         }
 
         .btn-danger {
             background: var(--danger);
+            color: white;
         }
 
-        /* Card View Modal */
+        /* Card View */
         .card-view {
             text-align: center;
         }
@@ -612,24 +736,24 @@
         .card-view-logo {
             width: 72px;
             height: 72px;
-            background: var(--bg-card);
+            background: var(--bg-elevated);
             border-radius: var(--radius);
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 28px;
-            font-weight: 600;
+            font-weight: 700;
             margin: 0 auto 16px;
         }
 
         .card-view-name {
             font-size: 24px;
-            font-weight: 600;
-            margin-bottom: 4px;
+            font-weight: 700;
+            margin-bottom: 6px;
         }
 
         .card-view-number {
-            font-family: 'JetBrains Mono', monospace;
+            font-family: 'SF Mono', 'Roboto Mono', monospace;
             font-size: 14px;
             color: var(--text-secondary);
         }
@@ -638,7 +762,8 @@
             background: white;
             padding: 24px;
             border-radius: var(--radius);
-            margin-bottom: 20px;
+            margin-bottom: 16px;
+            box-shadow: var(--shadow);
         }
 
         .barcode-display svg, .barcode-display canvas {
@@ -656,6 +781,11 @@
             margin-bottom: 20px;
         }
 
+        .brightness-hint svg {
+            width: 16px;
+            height: 16px;
+        }
+
         .card-actions {
             display: flex;
             gap: 12px;
@@ -665,11 +795,11 @@
             flex: 1;
         }
 
-        /* Tabs in Add Modal */
+        /* Tabs */
         .tabs {
             display: flex;
             gap: 4px;
-            background: var(--bg-card);
+            background: var(--bg-elevated);
             padding: 4px;
             border-radius: var(--radius-sm);
             margin-bottom: 20px;
@@ -677,21 +807,22 @@
 
         .tab {
             flex: 1;
-            padding: 10px;
+            padding: 12px;
             border: none;
             background: transparent;
             color: var(--text-secondary);
             font-family: inherit;
             font-size: 14px;
-            font-weight: 500;
+            font-weight: 600;
             cursor: pointer;
-            border-radius: 8px;
+            border-radius: 10px;
             transition: all 0.2s;
         }
 
         .tab.active {
-            background: var(--accent);
-            color: white;
+            background: var(--bg-card);
+            color: var(--text-primary);
+            box-shadow: var(--shadow);
         }
 
         /* Toast */
@@ -700,14 +831,16 @@
             bottom: 100px;
             left: 50%;
             transform: translateX(-50%) translateY(100px);
-            background: var(--bg-elevated);
-            padding: 12px 24px;
+            background: var(--bg-card);
+            padding: 14px 24px;
             border-radius: 30px;
             font-size: 14px;
-            box-shadow: var(--shadow);
+            font-weight: 500;
+            box-shadow: var(--shadow-lg);
             z-index: 3000;
             opacity: 0;
             transition: all 0.3s;
+            border: 1px solid var(--border);
         }
 
         .toast.show {
@@ -718,6 +851,7 @@
         .toast.success {
             background: var(--success);
             color: white;
+            border-color: var(--success);
         }
 
         /* Animations */
@@ -738,7 +872,7 @@
 
         /* Install Prompt */
         .install-prompt {
-            background: linear-gradient(135deg, var(--bg-card), var(--bg-elevated));
+            background: var(--bg-card);
             border: 1px solid var(--border);
             border-radius: var(--radius);
             padding: 16px;
@@ -746,6 +880,7 @@
             display: flex;
             align-items: center;
             gap: 12px;
+            box-shadow: var(--shadow);
         }
 
         .install-prompt.hidden {
@@ -755,12 +890,18 @@
         .install-icon {
             width: 44px;
             height: 44px;
-            background: var(--accent);
+            background: var(--accent-light);
             border-radius: var(--radius-sm);
             display: flex;
             align-items: center;
             justify-content: center;
             flex-shrink: 0;
+            color: var(--accent);
+        }
+
+        .install-icon svg {
+            width: 22px;
+            height: 22px;
         }
 
         .install-text {
@@ -768,7 +909,7 @@
         }
 
         .install-title {
-            font-weight: 500;
+            font-weight: 600;
             margin-bottom: 2px;
         }
 
@@ -778,15 +919,24 @@
         }
 
         .install-btn {
-            padding: 8px 16px;
+            padding: 10px 18px;
             background: var(--accent);
             border: none;
-            border-radius: 20px;
+            border-radius: 24px;
             color: white;
             font-family: inherit;
             font-size: 13px;
-            font-weight: 500;
+            font-weight: 600;
             cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        [data-theme="dark"] .install-btn {
+            color: #121212;
+        }
+
+        .install-btn:hover {
+            opacity: 0.9;
         }
 
         .install-close {
@@ -796,6 +946,18 @@
             cursor: pointer;
             padding: 4px;
         }
+
+        .install-close svg {
+            width: 20px;
+            height: 20px;
+        }
+
+        /* Divider */
+        .divider {
+            border: none;
+            border-top: 1px solid var(--border);
+            margin: 20px 0;
+        }
     </style>
 </head>
 <body>
@@ -803,16 +965,30 @@
         <header class="header">
             <div class="header-content">
                 <div class="logo">
-                    <div class="logo-icon">💳</div>
+                    <div class="logo-icon">
+                        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <rect x="2" y="5" width="20" height="14" rx="2"/>
+                            <path d="M6 9h2M6 13h4"/>
+                        </svg>
+                    </div>
                     <span class="logo-text">CardKeeper</span>
                 </div>
+                <button class="theme-toggle" id="themeToggle" aria-label="Переключить тему">
+                    <svg class="sun" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <circle cx="12" cy="12" r="5"/>
+                        <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
+                    </svg>
+                    <svg class="moon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+                    </svg>
+                </button>
             </div>
         </header>
 
         <!-- Install Prompt -->
         <div class="install-prompt hidden" id="installPrompt">
             <div class="install-icon">
-                <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                     <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/>
                 </svg>
             </div>
@@ -822,7 +998,7 @@
             </div>
             <button class="install-btn" id="installBtn">Установить</button>
             <button class="install-close" id="installClose">
-                <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                     <path d="M18 6 6 18M6 6l12 12"/>
                 </svg>
             </button>
@@ -834,16 +1010,21 @@
                 <svg class="search-icon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                     <circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>
                 </svg>
-                <input type="text" class="search-input" placeholder="Поиск карт..." id="searchInput">
+                <input type="text" class="search-input" placeholder="Поиск по названию или номеру..." id="searchInput">
             </div>
         </div>
 
-        <!-- Cards List -->
+        <!-- Cards -->
         <section class="cards-section">
             <div class="section-title" id="cardsCount">Мои карты</div>
             <div class="cards-grid" id="cardsList"></div>
             <div class="empty-state" id="emptyState">
-                <div class="empty-icon">🃏</div>
+                <div class="empty-icon">
+                    <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+                        <rect x="2" y="5" width="20" height="14" rx="2"/>
+                        <path d="M2 10h20"/>
+                    </svg>
+                </div>
                 <h3 class="empty-title">Карт пока нет</h3>
                 <p class="empty-text">Нажмите + чтобы добавить первую<br>карту лояльности</p>
             </div>
@@ -851,13 +1032,13 @@
     </div>
 
     <!-- FAB -->
-    <button class="fab" id="addCardBtn">
-        <svg width="28" height="28" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+    <button class="fab" id="addCardBtn" aria-label="Добавить карту">
+        <svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
             <path d="M12 5v14M5 12h14"/>
         </svg>
     </button>
 
-    <!-- Add Card Modal -->
+    <!-- Add Modal -->
     <div class="modal-overlay" id="addModalOverlay"></div>
     <div class="modal" id="addModal">
         <div class="modal-handle"></div>
@@ -870,7 +1051,6 @@
             </button>
         </div>
         <div class="modal-content">
-            <!-- Tabs -->
             <div class="tabs">
                 <button class="tab active" data-tab="scan">📷 Сканировать</button>
                 <button class="tab" data-tab="manual">✏️ Вручную</button>
@@ -878,21 +1058,38 @@
 
             <!-- Scan Tab -->
             <div id="scanTab">
-                <div class="scanner-container">
-                    <div id="scanner"></div>
-                    <div class="scanner-overlay">
-                        <div class="scanner-frame"></div>
+                <div id="scannerArea">
+                    <div class="scanner-container">
+                        <div id="scanner"></div>
+                        <div class="scanner-overlay">
+                            <div class="scanner-frame"></div>
+                        </div>
+                    </div>
+                    <p class="scanner-hint">Наведите камеру на штрих-код или QR-код</p>
+                </div>
+                
+                <div id="scannedArea" style="display: none;">
+                    <div class="scanned-preview">
+                        <div class="scanned-preview-header">
+                            <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                <path d="M20 6 9 17l-5-5"/>
+                            </svg>
+                            <span>Код отсканирован</span>
+                        </div>
+                        <div class="scanned-barcode" id="scannedBarcode"></div>
+                        <button class="rescan-btn" id="rescanBtn">
+                            <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                <path d="M1 4v6h6M23 20v-6h-6"/>
+                                <path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15"/>
+                            </svg>
+                            Сканировать заново
+                        </button>
                     </div>
                 </div>
-                <p class="scanner-hint">Наведите камеру на штрих-код или QR-код карты</p>
             </div>
 
             <!-- Manual Tab -->
             <div id="manualTab" style="display: none;">
-                <div class="form-group">
-                    <label class="form-label">Номер карты</label>
-                    <input type="text" class="form-input mono" id="cardNumberInput" placeholder="Введите номер карты">
-                </div>
                 <div class="form-group">
                     <label class="form-label">Тип штрих-кода</label>
                     <div class="barcode-types" id="barcodeTypes">
@@ -901,39 +1098,46 @@
                         <button class="barcode-type" data-type="EAN8">EAN-8</button>
                         <button class="barcode-type" data-type="QR">QR-код</button>
                         <button class="barcode-type" data-type="CODE39">CODE39</button>
-                        <button class="barcode-type" data-type="ITF14">ITF-14</button>
                     </div>
                 </div>
             </div>
 
-            <!-- Common Fields -->
+            <!-- Card Fields -->
             <div id="cardFields" style="display: none;">
-                <hr style="border: none; border-top: 1px solid var(--border); margin: 20px 0;">
+                <hr class="divider">
+                
+                <div class="form-group">
+                    <label class="form-label">Номер карты</label>
+                    <input type="text" class="form-input mono" id="cardNumberInput" placeholder="Введите или отредактируйте номер">
+                </div>
+                
                 <div class="form-group">
                     <label class="form-label">Название магазина</label>
-                    <input type="text" class="form-input" id="cardNameInput" placeholder="Например: IKEA">
+                    <input type="text" class="form-input" id="cardNameInput" placeholder="Например: Пятёрочка">
                 </div>
+                
                 <div class="form-group">
                     <label class="form-label">Цвет карты</label>
                     <div class="color-picker" id="colorPicker">
-                        <div class="color-option selected" style="background: #6366f1;" data-color="#6366f1"></div>
-                        <div class="color-option" style="background: #8b5cf6;" data-color="#8b5cf6"></div>
-                        <div class="color-option" style="background: #ec4899;" data-color="#ec4899"></div>
-                        <div class="color-option" style="background: #ef4444;" data-color="#ef4444"></div>
-                        <div class="color-option" style="background: #f97316;" data-color="#f97316"></div>
-                        <div class="color-option" style="background: #eab308;" data-color="#eab308"></div>
-                        <div class="color-option" style="background: #22c55e;" data-color="#22c55e"></div>
-                        <div class="color-option" style="background: #14b8a6;" data-color="#14b8a6"></div>
-                        <div class="color-option" style="background: #0ea5e9;" data-color="#0ea5e9"></div>
-                        <div class="color-option" style="background: #64748b;" data-color="#64748b"></div>
+                        <div class="color-option selected" style="background: #1a73e8;" data-color="#1a73e8"></div>
+                        <div class="color-option" style="background: #34a853;" data-color="#34a853"></div>
+                        <div class="color-option" style="background: #ea4335;" data-color="#ea4335"></div>
+                        <div class="color-option" style="background: #fbbc04;" data-color="#fbbc04"></div>
+                        <div class="color-option" style="background: #ff6d01;" data-color="#ff6d01"></div>
+                        <div class="color-option" style="background: #46bdc6;" data-color="#46bdc6"></div>
+                        <div class="color-option" style="background: #7baaf7;" data-color="#7baaf7"></div>
+                        <div class="color-option" style="background: #f06292;" data-color="#f06292"></div>
+                        <div class="color-option" style="background: #9575cd;" data-color="#9575cd"></div>
+                        <div class="color-option" style="background: #78909c;" data-color="#78909c"></div>
                     </div>
                 </div>
+                
                 <button class="btn" id="saveCardBtn">Сохранить карту</button>
             </div>
         </div>
     </div>
 
-    <!-- View Card Modal -->
+    <!-- View Modal -->
     <div class="modal-overlay" id="viewModalOverlay"></div>
     <div class="modal" id="viewModal">
         <div class="modal-handle"></div>
@@ -954,8 +1158,9 @@
                 </div>
                 <div class="barcode-display" id="barcodeDisplay"></div>
                 <div class="brightness-hint">
-                    <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                        <circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.2 4.2l1.4 1.4M18.4 18.4l1.4 1.4M1 12h2M21 12h2M4.2 19.8l1.4-1.4M18.4 5.6l1.4-1.4"/>
+                    <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <circle cx="12" cy="12" r="5"/>
+                        <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
                     </svg>
                     Увеличьте яркость для сканирования
                 </div>
@@ -970,50 +1175,63 @@
     <!-- Toast -->
     <div class="toast" id="toast"></div>
 
+    <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+    
     <script>
-        // App State
+        // State
         let cards = JSON.parse(localStorage.getItem('cardkeeper_cards') || '[]');
         let currentCard = null;
         let scanner = null;
         let scannedCode = null;
         let scannedFormat = null;
-        let selectedColor = '#6366f1';
+        let selectedColor = '#1a73e8';
         let selectedBarcodeType = 'CODE128';
         let deferredPrompt = null;
+        let isEditMode = false;
 
-        // DOM Elements
-        const cardsList = document.getElementById('cardsList');
-        const emptyState = document.getElementById('emptyState');
-        const cardsCount = document.getElementById('cardsCount');
-        const searchInput = document.getElementById('searchInput');
-        const addCardBtn = document.getElementById('addCardBtn');
-        const addModal = document.getElementById('addModal');
-        const addModalOverlay = document.getElementById('addModalOverlay');
-        const addModalClose = document.getElementById('addModalClose');
-        const viewModal = document.getElementById('viewModal');
-        const viewModalOverlay = document.getElementById('viewModalOverlay');
-        const viewModalClose = document.getElementById('viewModalClose');
+        // Theme
+        const savedTheme = localStorage.getItem('cardkeeper_theme') || 'light';
+        document.documentElement.setAttribute('data-theme', savedTheme);
+        updateThemeColor();
+
+        // DOM
+        const $ = id => document.getElementById(id);
+        const cardsList = $('cardsList');
+        const emptyState = $('emptyState');
+        const cardsCount = $('cardsCount');
+        const searchInput = $('searchInput');
+        const addCardBtn = $('addCardBtn');
+        const addModal = $('addModal');
+        const addModalOverlay = $('addModalOverlay');
+        const addModalClose = $('addModalClose');
+        const viewModal = $('viewModal');
+        const viewModalOverlay = $('viewModalOverlay');
+        const viewModalClose = $('viewModalClose');
         const tabs = document.querySelectorAll('.tab');
-        const scanTab = document.getElementById('scanTab');
-        const manualTab = document.getElementById('manualTab');
-        const cardFields = document.getElementById('cardFields');
-        const cardNumberInput = document.getElementById('cardNumberInput');
-        const cardNameInput = document.getElementById('cardNameInput');
-        const colorPicker = document.getElementById('colorPicker');
-        const barcodeTypes = document.getElementById('barcodeTypes');
-        const saveCardBtn = document.getElementById('saveCardBtn');
-        const deleteCardBtn = document.getElementById('deleteCardBtn');
-        const editCardBtn = document.getElementById('editCardBtn');
-        const toast = document.getElementById('toast');
-        const installPrompt = document.getElementById('installPrompt');
-        const installBtn = document.getElementById('installBtn');
-        const installClose = document.getElementById('installClose');
+        const scanTab = $('scanTab');
+        const manualTab = $('manualTab');
+        const scannerArea = $('scannerArea');
+        const scannedArea = $('scannedArea');
+        const cardFields = $('cardFields');
+        const cardNumberInput = $('cardNumberInput');
+        const cardNameInput = $('cardNameInput');
+        const colorPicker = $('colorPicker');
+        const barcodeTypes = $('barcodeTypes');
+        const saveCardBtn = $('saveCardBtn');
+        const deleteCardBtn = $('deleteCardBtn');
+        const editCardBtn = $('editCardBtn');
+        const toast = $('toast');
+        const themeToggle = $('themeToggle');
+        const installPrompt = $('installPrompt');
+        const installBtn = $('installBtn');
+        const installClose = $('installClose');
+        const rescanBtn = $('rescanBtn');
 
-        // Initialize
+        // Init
         renderCards();
         setupEventListeners();
 
-        // PWA Install Prompt
+        // PWA Install
         window.addEventListener('beforeinstallprompt', (e) => {
             e.preventDefault();
             deferredPrompt = e;
@@ -1036,6 +1254,21 @@
             installPrompt.classList.add('hidden');
         });
 
+        // Theme Toggle
+        themeToggle.addEventListener('click', () => {
+            const current = document.documentElement.getAttribute('data-theme');
+            const next = current === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', next);
+            localStorage.setItem('cardkeeper_theme', next);
+            updateThemeColor();
+        });
+
+        function updateThemeColor() {
+            const theme = document.documentElement.getAttribute('data-theme');
+            const meta = document.querySelector('meta[name="theme-color"]');
+            meta.setAttribute('content', theme === 'dark' ? '#121212' : '#ffffff');
+        }
+
         // Event Listeners
         function setupEventListeners() {
             addCardBtn.addEventListener('click', openAddModal);
@@ -1049,11 +1282,7 @@
             });
 
             colorPicker.querySelectorAll('.color-option').forEach(opt => {
-                opt.addEventListener('click', () => {
-                    colorPicker.querySelector('.selected')?.classList.remove('selected');
-                    opt.classList.add('selected');
-                    selectedColor = opt.dataset.color;
-                });
+                opt.addEventListener('click', () => selectColor(opt));
             });
 
             barcodeTypes.querySelectorAll('.barcode-type').forEach(btn => {
@@ -1066,7 +1295,6 @@
 
             cardNumberInput.addEventListener('input', () => {
                 if (cardNumberInput.value.trim()) {
-                    cardFields.style.display = 'block';
                     scannedCode = cardNumberInput.value.trim();
                     scannedFormat = selectedBarcodeType;
                 }
@@ -1075,17 +1303,25 @@
             saveCardBtn.addEventListener('click', saveCard);
             deleteCardBtn.addEventListener('click', deleteCard);
             editCardBtn.addEventListener('click', editCard);
+            rescanBtn.addEventListener('click', rescan);
 
             searchInput.addEventListener('input', () => {
                 renderCards(searchInput.value);
             });
         }
 
+        function selectColor(opt) {
+            colorPicker.querySelector('.selected')?.classList.remove('selected');
+            opt.classList.add('selected');
+            selectedColor = opt.dataset.color;
+        }
+
         // Render Cards
         function renderCards(filter = '') {
+            const filterLower = filter.toLowerCase();
             const filtered = cards.filter(card => 
-                card.name.toLowerCase().includes(filter.toLowerCase()) ||
-                card.number.includes(filter)
+                card.name.toLowerCase().includes(filterLower) ||
+                card.number.toLowerCase().includes(filterLower)
             );
 
             cardsCount.textContent = `Мои карты (${cards.length})`;
@@ -1118,15 +1354,16 @@
             });
         }
 
-        // Open Add Modal
+        // Add Modal
         function openAddModal() {
+            isEditMode = false;
+            currentCard = null;
             resetAddForm();
             addModal.classList.add('active');
             addModalOverlay.classList.add('active');
             switchTab('scan');
         }
 
-        // Close Add Modal
         function closeAddModal() {
             addModal.classList.remove('active');
             addModalOverlay.classList.remove('active');
@@ -1134,44 +1371,49 @@
             resetAddForm();
         }
 
-        // Reset Add Form
         function resetAddForm() {
             scannedCode = null;
             scannedFormat = null;
             cardNumberInput.value = '';
             cardNameInput.value = '';
             cardFields.style.display = 'none';
+            scannerArea.style.display = 'block';
+            scannedArea.style.display = 'none';
+            
             colorPicker.querySelector('.selected')?.classList.remove('selected');
-            colorPicker.querySelector('[data-color="#6366f1"]').classList.add('selected');
-            selectedColor = '#6366f1';
+            colorPicker.querySelector('[data-color="#1a73e8"]').classList.add('selected');
+            selectedColor = '#1a73e8';
+            
+            barcodeTypes.querySelector('.selected')?.classList.remove('selected');
+            barcodeTypes.querySelector('[data-type="CODE128"]').classList.add('selected');
+            selectedBarcodeType = 'CODE128';
         }
 
-        // Switch Tab
+        // Tabs
         function switchTab(tab) {
             tabs.forEach(t => t.classList.toggle('active', t.dataset.tab === tab));
             
             if (tab === 'scan') {
                 scanTab.style.display = 'block';
                 manualTab.style.display = 'none';
-                startScanner();
+                if (!scannedCode) {
+                    startScanner();
+                }
             } else {
                 scanTab.style.display = 'none';
                 manualTab.style.display = 'block';
                 stopScanner();
+                cardFields.style.display = 'block';
             }
         }
 
-        // Start Scanner
+        // Scanner
         async function startScanner() {
             try {
                 scanner = new Html5Qrcode('scanner');
                 await scanner.start(
                     { facingMode: 'environment' },
-                    {
-                        fps: 10,
-                        qrbox: { width: 250, height: 150 },
-                        aspectRatio: 1
-                    },
+                    { fps: 10, qrbox: { width: 250, height: 150 }, aspectRatio: 1 },
                     onScanSuccess,
                     () => {}
                 );
@@ -1181,22 +1423,19 @@
             }
         }
 
-        // Stop Scanner
         function stopScanner() {
             if (scanner && scanner.isScanning) {
                 scanner.stop().catch(console.error);
             }
         }
 
-        // On Scan Success
         function onScanSuccess(decodedText, decodedResult) {
             scannedCode = decodedText;
             scannedFormat = mapFormat(decodedResult.result.format?.formatName || 'CODE_128');
             
             stopScanner();
-            cardFields.style.display = 'block';
+            showScannedPreview();
             
-            // Vibrate feedback
             if (navigator.vibrate) {
                 navigator.vibrate(100);
             }
@@ -1204,27 +1443,77 @@
             showToast('Код отсканирован!', 'success');
         }
 
-        // Map barcode format
+        function showScannedPreview() {
+            scannerArea.style.display = 'none';
+            scannedArea.style.display = 'block';
+            cardFields.style.display = 'block';
+            
+            cardNumberInput.value = scannedCode;
+            
+            // Render preview barcode
+            const container = $('scannedBarcode');
+            container.innerHTML = '';
+            
+            if (scannedFormat === 'QR') {
+                const qrDiv = document.createElement('div');
+                container.appendChild(qrDiv);
+                new QRCode(qrDiv, { text: scannedCode, width: 150, height: 150 });
+            } else {
+                const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+                container.appendChild(svg);
+                try {
+                    JsBarcode(svg, scannedCode, {
+                        format: scannedFormat,
+                        width: 2,
+                        height: 60,
+                        displayValue: true,
+                        fontSize: 12,
+                        margin: 5
+                    });
+                } catch {
+                    JsBarcode(svg, scannedCode, {
+                        format: 'CODE128',
+                        width: 2,
+                        height: 60,
+                        displayValue: true,
+                        fontSize: 12,
+                        margin: 5
+                    });
+                }
+            }
+        }
+
+        function rescan() {
+            scannedCode = null;
+            scannedFormat = null;
+            cardNumberInput.value = '';
+            scannerArea.style.display = 'block';
+            scannedArea.style.display = 'none';
+            cardFields.style.display = 'none';
+            startScanner();
+        }
+
         function mapFormat(format) {
-            const formatMap = {
+            const map = {
                 'QR_CODE': 'QR',
                 'EAN_13': 'EAN13',
                 'EAN_8': 'EAN8',
                 'CODE_128': 'CODE128',
                 'CODE_39': 'CODE39',
                 'ITF': 'ITF14',
-                'UPC_A': 'UPC',
-                'UPC_E': 'UPC'
+                'UPC_A': 'CODE128',
+                'UPC_E': 'CODE128'
             };
-            return formatMap[format] || 'CODE128';
+            return map[format] || 'CODE128';
         }
 
         // Save Card
         function saveCard() {
+            const number = cardNumberInput.value.trim();
             const name = cardNameInput.value.trim();
             
-            if (!scannedCode) {
-                showToast('Отсканируйте или введите номер карты');
+            if (!number) {
+                showToast('Введите номер карты');
                 return;
             }
             
@@ -1234,15 +1523,15 @@
             }
 
             const card = {
-                id: currentCard?.id || Date.now().toString(),
+                id: isEditMode && currentCard ? currentCard.id : Date.now().toString(),
                 name,
-                number: scannedCode,
+                number,
                 format: scannedFormat || selectedBarcodeType,
                 color: selectedColor,
-                createdAt: currentCard?.createdAt || new Date().toISOString()
+                createdAt: isEditMode && currentCard ? currentCard.createdAt : new Date().toISOString()
             };
 
-            if (currentCard) {
+            if (isEditMode && currentCard) {
                 const index = cards.findIndex(c => c.id === currentCard.id);
                 cards[index] = card;
             } else {
@@ -1252,59 +1541,46 @@
             saveCards();
             renderCards();
             closeAddModal();
-            showToast(currentCard ? 'Карта обновлена' : 'Карта добавлена', 'success');
+            showToast(isEditMode ? 'Карта обновлена' : 'Карта добавлена', 'success');
             currentCard = null;
+            isEditMode = false;
         }
 
-        // Open View Modal
+        // View Modal
         function openViewModal(cardId) {
             currentCard = cards.find(c => c.id === cardId);
             if (!currentCard) return;
 
-            document.getElementById('viewCardLogo').textContent = currentCard.name.charAt(0).toUpperCase();
-            document.getElementById('viewCardLogo').style.color = currentCard.color;
-            document.getElementById('viewCardName').textContent = currentCard.name;
-            document.getElementById('viewCardNumber').textContent = currentCard.number;
+            $('viewCardLogo').textContent = currentCard.name.charAt(0).toUpperCase();
+            $('viewCardLogo').style.color = currentCard.color;
+            $('viewCardName').textContent = currentCard.name;
+            $('viewCardNumber').textContent = currentCard.number;
 
-            // Generate barcode
-            const barcodeDisplay = document.getElementById('barcodeDisplay');
-            barcodeDisplay.innerHTML = '';
+            const display = $('barcodeDisplay');
+            display.innerHTML = '';
 
             if (currentCard.format === 'QR') {
-                // Use html5-qrcode to generate QR
                 const qrDiv = document.createElement('div');
-                qrDiv.id = 'qrcode';
-                barcodeDisplay.appendChild(qrDiv);
-                
-                new Html5Qrcode('qrcode').clear();
-                const qrcode = new QRCode(qrDiv, {
-                    text: currentCard.number,
-                    width: 200,
-                    height: 200
-                });
+                display.appendChild(qrDiv);
+                new QRCode(qrDiv, { text: currentCard.number, width: 200, height: 200 });
             } else {
                 const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-                svg.id = 'barcode';
-                barcodeDisplay.appendChild(svg);
-                
+                display.appendChild(svg);
                 try {
-                    JsBarcode('#barcode', currentCard.number, {
+                    JsBarcode(svg, currentCard.number, {
                         format: currentCard.format,
                         width: 2,
                         height: 80,
                         displayValue: true,
-                        font: 'JetBrains Mono',
                         fontSize: 14,
                         margin: 10
                     });
-                } catch (err) {
-                    // Fallback to CODE128
-                    JsBarcode('#barcode', currentCard.number, {
+                } catch {
+                    JsBarcode(svg, currentCard.number, {
                         format: 'CODE128',
                         width: 2,
                         height: 80,
                         displayValue: true,
-                        font: 'JetBrains Mono',
                         fontSize: 14,
                         margin: 10
                     });
@@ -1314,17 +1590,14 @@
             viewModal.classList.add('active');
             viewModalOverlay.classList.add('active');
 
-            // Try to increase brightness
             if ('wakeLock' in navigator) {
                 navigator.wakeLock.request('screen').catch(() => {});
             }
         }
 
-        // Close View Modal
         function closeViewModal() {
             viewModal.classList.remove('active');
             viewModalOverlay.classList.remove('active');
-            currentCard = null;
         }
 
         // Edit Card
@@ -1332,6 +1605,9 @@
             closeViewModal();
             
             setTimeout(() => {
+                isEditMode = true;
+                resetAddForm();
+                
                 addModal.classList.add('active');
                 addModalOverlay.classList.add('active');
                 switchTab('manual');
@@ -1341,6 +1617,7 @@
                 scannedCode = currentCard.number;
                 scannedFormat = currentCard.format;
                 selectedColor = currentCard.color;
+                selectedBarcodeType = currentCard.format;
                 
                 // Select barcode type
                 barcodeTypes.querySelector('.selected')?.classList.remove('selected');
@@ -1367,18 +1644,16 @@
             }
         }
 
-        // Save Cards to localStorage
+        // Storage
         function saveCards() {
             localStorage.setItem('cardkeeper_cards', JSON.stringify(cards));
         }
 
-        // Show Toast
+        // Toast
         function showToast(message, type = '') {
             toast.textContent = message;
             toast.className = 'toast show' + (type ? ' ' + type : '');
-            setTimeout(() => {
-                toast.classList.remove('show');
-            }, 2500);
+            setTimeout(() => toast.classList.remove('show'), 2500);
         }
 
         // Helpers
@@ -1389,19 +1664,16 @@
         }
 
         function formatCardNumber(number) {
-            if (number.length > 16) {
-                return number.substring(0, 8) + '...' + number.substring(number.length - 4);
+            if (number.length > 20) {
+                return number.substring(0, 10) + '...' + number.substring(number.length - 6);
             }
             return number;
         }
 
-        // Service Worker Registration
+        // Service Worker
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.register('sw.js').catch(console.error);
         }
     </script>
-
-    <!-- QR Code library for generation -->
-    <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
 </body>
 </html>
