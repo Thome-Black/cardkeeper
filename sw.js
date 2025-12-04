@@ -1,4 +1,4 @@
-const CACHE_NAME = 'cardkeeper-v8';
+const CACHE_NAME = 'cardkeeper-v9';
 const ASSETS = [
     './',
     './index.html',

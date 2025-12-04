@@ -14,11 +14,13 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+    <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
     <style>
         *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
         :root{--bg-primary:#f8f9fa;--bg-secondary:#fff;--bg-card:#fff;--bg-elevated:#f1f3f4;--text-primary:#1a1a1a;--text-secondary:#5f6368;--text-muted:#9aa0a6;--accent:#1a73e8;--accent-light:#e8f0fe;--accent-glow:rgba(26,115,232,0.2);--success:#34a853;--danger:#ea4335;--border:rgba(0,0,0,0.08);--shadow:0 1px 3px rgba(0,0,0,0.1),0 1px 2px rgba(0,0,0,0.06);--shadow-lg:0 4px 12px rgba(0,0,0,0.1);--radius:16px;--radius-sm:12px}
         [data-theme="dark"]{--bg-primary:#121212;--bg-secondary:#1e1e1e;--bg-card:#252525;--bg-elevated:#2d2d2d;--text-primary:#e8eaed;--text-secondary:#9aa0a6;--text-muted:#6e6e6e;--accent:#8ab4f8;--accent-light:#1e3a5f;--accent-glow:rgba(138,180,248,0.2);--border:rgba(255,255,255,0.1);--shadow:0 1px 3px rgba(0,0,0,0.3);--shadow-lg:0 4px 12px rgba(0,0,0,0.4)}
         body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg-primary);color:var(--text-primary);min-height:100vh;min-height:100dvh;overflow-x:hidden}
+        body.modal-open{overflow:hidden;position:fixed;width:100%;height:100%}
         .app{max-width:480px;margin:0 auto;padding:0 16px 100px}
         .header{padding:20px 0 16px;position:sticky;top:0;background:var(--bg-primary);z-index:100}
         .header-content{display:flex;align-items:center;justify-content:space-between}
@@ -60,7 +62,7 @@
         .fab svg{width:28px;height:28px}
         .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.5);backdrop-filter:blur(4px);z-index:2000;opacity:0;visibility:hidden;transition:all .3s}
         .modal-overlay.active{opacity:1;visibility:visible}
-        .modal{position:fixed;bottom:0;left:0;right:0;background:var(--bg-secondary);border-radius:var(--radius) var(--radius) 0 0;z-index:2001;transform:translateY(100%);transition:transform .4s cubic-bezier(0.4,0,0.2,1);max-height:92vh;overflow-y:auto}
+        .modal{position:fixed;bottom:0;left:0;right:0;background:var(--bg-secondary);border-radius:var(--radius) var(--radius) 0 0;z-index:2001;transform:translateY(100%);transition:transform .4s cubic-bezier(0.4,0,0.2,1);max-height:92vh;overflow-y:auto;overscroll-behavior:contain}
         .modal.active{transform:translateY(0)}
         .modal-handle{width:36px;height:4px;background:var(--text-muted);border-radius:2px;margin:12px auto;opacity:.5}
         .modal-header{padding:8px 20px 16px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border)}
@@ -70,17 +72,12 @@
         .tabs{display:flex;gap:4px;background:var(--bg-elevated);padding:4px;border-radius:var(--radius-sm);margin-bottom:20px}
         .tab{flex:1;padding:12px;border:none;background:transparent;color:var(--text-secondary);font-family:inherit;font-size:14px;font-weight:600;cursor:pointer;border-radius:10px}
         .tab.active{background:var(--bg-card);color:var(--text-primary);box-shadow:var(--shadow)}
-        .scanner-wrapper{position:relative;width:100%;aspect-ratio:1;background:#000;border-radius:var(--radius);overflow:hidden;margin-bottom:16px}
-        .scanner-video{width:100%;height:100%;object-fit:cover}
-        .scanner-overlay{position:absolute;inset:0;display:flex;align-items:center;justify-content:center}
-        .scan-region{width:75%;aspect-ratio:1.6;position:relative;box-shadow:0 0 0 2000px rgba(0,0,0,0.6);border-radius:12px;border:3px solid var(--accent)}
-        .corner{position:absolute;width:24px;height:24px;border-color:#fff;border-style:solid}
-        .corner-tl{top:-2px;left:-2px;border-width:4px 0 0 4px;border-radius:8px 0 0 0}
-        .corner-tr{top:-2px;right:-2px;border-width:4px 4px 0 0;border-radius:0 8px 0 0}
-        .corner-bl{bottom:-2px;left:-2px;border-width:0 0 4px 4px;border-radius:0 0 0 8px}
-        .corner-br{bottom:-2px;right:-2px;border-width:0 4px 4px 0;border-radius:0 0 8px 0}
+        .scanner-container{position:relative;width:100%;aspect-ratio:1;background:#000;border-radius:var(--radius);overflow:hidden;margin-bottom:16px}
+        #scanner-region{width:100%;height:100%}
+        #scanner-region video{width:100%!important;height:100%!important;object-fit:cover!important;border-radius:var(--radius)}
+        #scanner-region img[alt="Info icon"]{display:none!important}
+        #qr-shaded-region{border-radius:12px!important}
         .scanner-hint{text-align:center;color:var(--text-secondary);font-size:14px;margin-bottom:16px}
-        .camera-note{text-align:center;color:var(--text-muted);font-size:12px;margin-top:-8px;margin-bottom:16px}
         .scanned-preview{background:var(--bg-card);border:2px solid var(--success);border-radius:var(--radius);padding:20px;margin-bottom:16px}
         .scanned-header{display:flex;align-items:center;gap:10px;margin-bottom:16px;color:var(--success);font-weight:600}
         .scanned-header svg{width:20px;height:20px}
@@ -185,19 +182,10 @@
             </div>
             <div id="scanTab">
                 <div id="scannerArea">
-                    <div class="scanner-wrapper">
-                        <video id="scannerVideo" class="scanner-video" autoplay playsinline muted></video>
-                        <div class="scanner-overlay">
-                            <div class="scan-region">
-                                <div class="corner corner-tl"></div>
-                                <div class="corner corner-tr"></div>
-                                <div class="corner corner-bl"></div>
-                                <div class="corner corner-br"></div>
-                            </div>
-                        </div>
+                    <div class="scanner-container">
+                        <div id="scanner-region"></div>
                     </div>
                     <p class="scanner-hint">Наведите камеру на штрих-код или QR-код</p>
-                    <p class="camera-note">Индикатор записи — стандартное поведение браузера при доступе к камере</p>
                 </div>
                 <div id="scannedArea" style="display:none">
                     <div class="scanned-preview">
@@ -215,7 +203,6 @@
                         <button class="barcode-type" data-type="EAN13" type="button">EAN-13</button>
                         <button class="barcode-type" data-type="EAN8" type="button">EAN-8</button>
                         <button class="barcode-type" data-type="QR" type="button">QR-код</button>
-                        <button class="barcode-type" data-type="CODE39" type="button">CODE39</button>
                     </div>
                 </div>
             </div>
@@ -279,8 +266,8 @@
         var selectedColor = '#1a73e8';
         var selectedBarcodeType = 'CODE128';
         var isEditMode = false;
-        var videoStream = null;
-        var scanInterval = null;
+        var html5QrCode = null;
+        var scrollPosition = 0;
 
         var savedTheme = localStorage.getItem('cardkeeper_theme') || 'light';
         document.documentElement.setAttribute('data-theme', savedTheme);
@@ -305,7 +292,6 @@
         var manualTab = $('manualTab');
         var scannerArea = $('scannerArea');
         var scannedArea = $('scannedArea');
-        var scannerVideo = $('scannerVideo');
         var cardFields = $('cardFields');
         var cardNumberInput = $('cardNumberInput');
         var cardNameInput = $('cardNameInput');
@@ -356,6 +342,18 @@
             document.querySelector('meta[name="theme-color"]').content = theme === 'dark' ? '#121212' : '#ffffff';
         }
 
+        function lockScroll() {
+            scrollPosition = window.pageYOffset;
+            document.body.classList.add('modal-open');
+            document.body.style.top = -scrollPosition + 'px';
+        }
+
+        function unlockScroll() {
+            document.body.classList.remove('modal-open');
+            document.body.style.top = '';
+            window.scrollTo(0, scrollPosition);
+        }
+
         addCardBtn.onclick = openAddModal;
         addModalOverlay.onclick = closeAddModal;
         addModalClose.onclick = closeAddModal;
@@ -396,7 +394,6 @@
         function renderCards(filter) {
             filter = filter || '';
             var f = filter.toLowerCase();
-            // Поиск ТОЛЬКО по названию
             var filtered = cards.filter(function(c) {
                 return c.name.toLowerCase().indexOf(f) !== -1;
             });
@@ -437,6 +434,7 @@
             currentCard = null;
             addModalTitle.textContent = 'Добавить карту';
             resetForm();
+            lockScroll();
             addModal.classList.add('active');
             addModalOverlay.classList.add('active');
             switchTab('scan');
@@ -445,8 +443,9 @@
         function closeAddModal() {
             addModal.classList.remove('active');
             addModalOverlay.classList.remove('active');
-            stopCamera();
+            stopScanner();
             resetForm();
+            unlockScroll();
         }
 
         function resetForm() {
@@ -478,67 +477,73 @@
             if (tab === 'scan') {
                 scanTab.style.display = 'block';
                 manualTab.style.display = 'none';
-                if (!scannedCode) startCamera();
+                if (!scannedCode) {
+                    startScanner();
+                }
             } else {
                 scanTab.style.display = 'none';
                 manualTab.style.display = 'block';
-                stopCamera();
+                stopScanner();
                 cardFields.style.display = 'block';
             }
         }
 
-        function startCamera() {
-            var constraints = { video: { facingMode: 'environment', width: { ideal: 1280 }, height: { ideal: 720 } }, audio: false };
-            navigator.mediaDevices.getUserMedia(constraints).then(function(stream) {
-                videoStream = stream;
-                scannerVideo.srcObject = stream;
-                scannerVideo.onloadedmetadata = function() {
-                    scannerVideo.play().then(function() {
-                        startScanning();
-                    });
-                };
-            }).catch(function(e) {
-                console.error('Camera error:', e);
-                var m = 'Не удалось запустить камеру';
-                if (e.name === 'NotAllowedError') m = 'Разрешите доступ к камере';
-                else if (e.name === 'NotFoundError') m = 'Камера не найдена';
-                showToast(m);
+        function startScanner() {
+            if (html5QrCode) {
+                stopScanner();
+            }
+            
+            html5QrCode = new Html5Qrcode("scanner-region");
+            
+            var config = {
+                fps: 10,
+                qrbox: function(viewfinderWidth, viewfinderHeight) {
+                    var minEdge = Math.min(viewfinderWidth, viewfinderHeight);
+                    var size = Math.floor(minEdge * 0.75);
+                    return { width: size, height: Math.floor(size * 0.6) };
+                },
+                aspectRatio: 1.0
+            };
+
+            html5QrCode.start(
+                { facingMode: "environment" },
+                config,
+                function(decodedText, decodedResult) {
+                    onCodeScanned(decodedText, decodedResult.result.format.formatName);
+                },
+                function(errorMessage) {
+                    // Игнорируем ошибки сканирования
+                }
+            ).catch(function(err) {
+                console.error('Scanner error:', err);
+                showToast('Не удалось запустить камеру');
                 switchTab('manual');
             });
         }
 
-        function stopCamera() {
-            if (scanInterval) {
-                clearInterval(scanInterval);
-                scanInterval = null;
+        function stopScanner() {
+            if (html5QrCode) {
+                html5QrCode.stop().then(function() {
+                    html5QrCode.clear();
+                    html5QrCode = null;
+                }).catch(function(err) {
+                    console.error('Stop scanner error:', err);
+                    html5QrCode = null;
+                });
             }
-            if (videoStream) {
-                videoStream.getTracks().forEach(function(t) { t.stop(); });
-                videoStream = null;
-            }
-            scannerVideo.srcObject = null;
-        }
-
-        function startScanning() {
-            if (!window.BarcodeDetector) {
-                console.log('BarcodeDetector not supported');
-                return;
-            }
-            var detector = new BarcodeDetector({ formats: ['qr_code', 'ean_13', 'ean_8', 'code_128', 'code_39', 'upc_a', 'upc_e', 'itf'] });
-            scanInterval = setInterval(function() {
-                if (!videoStream || scannerVideo.paused) return;
-                detector.detect(scannerVideo).then(function(codes) {
-                    if (codes.length > 0) {
-                        onCodeScanned(codes[0].rawValue, codes[0].format);
-                    }
-                }).catch(function() {});
-            }, 300);
         }
 
         function onCodeScanned(code, format) {
-            scannedCode = code;
-            scannedFormat = mapFormat(format || 'code_128');
-            stopCamera();
+            // Оставляем только цифры
+            var cleanCode = code.replace(/\D/g, '');
+            if (!cleanCode) {
+                showToast('Код не содержит цифр');
+                return;
+            }
+            
+            scannedCode = cleanCode;
+            scannedFormat = mapFormat(format || 'CODE_128');
+            stopScanner();
             showScannedPreview();
             if (navigator.vibrate) navigator.vibrate(100);
             showToast('Код отсканирован!', 'success');
@@ -546,8 +551,8 @@
 
         function mapFormat(f) {
             var m = {
-                'qr_code': 'QR', 'ean_13': 'EAN13', 'ean_8': 'EAN8', 'code_128': 'CODE128',
-                'code_39': 'CODE39', 'upc_a': 'CODE128', 'upc_e': 'CODE128', 'itf': 'CODE128'
+                'QR_CODE': 'QR', 'EAN_13': 'EAN13', 'EAN_8': 'EAN8', 'CODE_128': 'CODE128',
+                'CODE_39': 'CODE128', 'UPC_A': 'CODE128', 'UPC_E': 'CODE128', 'ITF': 'CODE128'
             };
             return m[f] || 'CODE128';
         }
@@ -569,7 +574,7 @@
             scannerArea.style.display = 'block';
             scannedArea.style.display = 'none';
             cardFields.style.display = 'none';
-            startCamera();
+            startScanner();
         }
 
         function getBestFormat(n, p) {
@@ -594,7 +599,6 @@
                 try {
                     JsBarcode(svg, num, { format: f, width: 2, height: barH, displayValue: true, fontSize: 14, margin: 10 });
                 } catch (e) {
-                    // Fallback на CODE128
                     container.removeChild(svg);
                     var svg2 = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
                     container.appendChild(svg2);
@@ -606,8 +610,6 @@
         function saveCard() {
             var rawNum = cardNumberInput.value.trim();
             var name = cardNameInput.value.trim();
-            
-            // Оставляем только цифры
             var num = rawNum.replace(/\D/g, '');
             
             if (!num) { 
@@ -660,6 +662,7 @@
                 d.innerHTML = '';
                 renderBarcode(d, currentCard.number, currentCard.format, 200, 80);
 
+                lockScroll();
                 viewModal.classList.add('active');
                 viewModalOverlay.classList.add('active');
 
@@ -675,6 +678,7 @@
         function closeViewModal() {
             viewModal.classList.remove('active');
             viewModalOverlay.classList.remove('active');
+            unlockScroll();
         }
 
         function editCard() {
@@ -684,6 +688,7 @@
             setTimeout(function() {
                 isEditMode = true;
                 addModalTitle.textContent = 'Редактировать карту';
+                lockScroll();
                 addModal.classList.add('active');
                 addModalOverlay.classList.add('active');
 
