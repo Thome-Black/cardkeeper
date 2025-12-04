@@ -223,7 +223,7 @@
                 <hr class="divider">
                 <div class="form-group">
                     <label class="form-label">Номер карты</label>
-                    <input type="text" class="form-input mono" id="cardNumberInput" placeholder="Введите или отредактируйте номер">
+                    <input type="text" class="form-input mono" id="cardNumberInput" placeholder="Только цифры" inputmode="numeric">
                 </div>
                 <div class="form-group">
                     <label class="form-label">Название магазина</label>
@@ -574,52 +574,46 @@
 
         function getBestFormat(n, p) {
             if (p === 'QR') return 'QR';
-            var d = /^\d+$/.test(n);
-            if (p === 'EAN13' && d && n.length === 13) return 'EAN13';
-            if (p === 'EAN8' && d && n.length === 8) return 'EAN8';
-            if (p === 'CODE39' && /^[A-Z0-9\-.\$\/\+\% ]+$/i.test(n)) return 'CODE39';
+            if (p === 'EAN13' && n.length === 13) return 'EAN13';
+            if (p === 'EAN8' && n.length === 8) return 'EAN8';
             return 'CODE128';
         }
 
         function renderBarcode(container, num, fmt, qrSize, barH) {
             qrSize = qrSize || 200;
             barH = barH || 80;
-            try {
-                var f = getBestFormat(num, fmt);
-                if (f === 'QR') {
-                    var d = document.createElement('div');
-                    container.appendChild(d);
-                    new QRCode(d, { text: num, width: qrSize, height: qrSize });
-                } else {
-                    var svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-                    container.appendChild(svg);
-                    try {
-                        JsBarcode(svg, num, { format: f, width: 2, height: barH, displayValue: true, fontSize: 14, margin: 10 });
-                    } catch (e1) {
-                        container.removeChild(svg);
-                        var svg2 = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-                        container.appendChild(svg2);
-                        try {
-                            JsBarcode(svg2, num, { format: 'CODE128', width: 2, height: barH, displayValue: true, fontSize: 14, margin: 10 });
-                        } catch (e2) {
-                            // Если и CODE128 не работает - показываем как QR
-                            container.removeChild(svg2);
-                            var qrDiv = document.createElement('div');
-                            container.appendChild(qrDiv);
-                            new QRCode(qrDiv, { text: num, width: qrSize, height: qrSize });
-                        }
-                    }
+            var f = getBestFormat(num, fmt);
+            
+            if (f === 'QR') {
+                var d = document.createElement('div');
+                container.appendChild(d);
+                new QRCode(d, { text: num, width: qrSize, height: qrSize });
+            } else {
+                var svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+                container.appendChild(svg);
+                try {
+                    JsBarcode(svg, num, { format: f, width: 2, height: barH, displayValue: true, fontSize: 14, margin: 10 });
+                } catch (e) {
+                    // Fallback на CODE128
+                    container.removeChild(svg);
+                    var svg2 = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+                    container.appendChild(svg2);
+                    JsBarcode(svg2, num, { format: 'CODE128', width: 2, height: barH, displayValue: true, fontSize: 14, margin: 10 });
                 }
-            } catch (e) {
-                // Последняя защита - просто показываем номер текстом
-                container.innerHTML = '<div style="font-family:monospace;font-size:18px;padding:20px;text-align:center;word-break:break-all">' + num + '</div>';
             }
         }
 
         function saveCard() {
-            var num = cardNumberInput.value.trim();
+            var rawNum = cardNumberInput.value.trim();
             var name = cardNameInput.value.trim();
-            if (!num) { showToast('Введите номер карты'); return; }
+            
+            // Оставляем только цифры
+            var num = rawNum.replace(/\D/g, '');
+            
+            if (!num) { 
+                showToast('Номер карты должен содержать цифры'); 
+                return; 
+            }
             if (!name) { showToast('Введите название магазина'); return; }
 
             var card = {
