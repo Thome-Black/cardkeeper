@@ -9,993 +9,126 @@
     <title>CardKeeper</title>
     <link rel="manifest" href="manifest.json">
     <link rel="apple-touch-icon" href="icon-192.png">
-    
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    
-    <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
-    
+    <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            -webkit-tap-highlight-color: transparent;
-        }
-
-        :root {
-            --bg-primary: #f8f9fa;
-            --bg-secondary: #ffffff;
-            --bg-card: #ffffff;
-            --bg-elevated: #f1f3f4;
-            --text-primary: #1a1a1a;
-            --text-secondary: #5f6368;
-            --text-muted: #9aa0a6;
-            --accent: #1a73e8;
-            --accent-light: #e8f0fe;
-            --accent-glow: rgba(26, 115, 232, 0.2);
-            --success: #34a853;
-            --danger: #ea4335;
-            --warning: #fbbc04;
-            --border: rgba(0, 0, 0, 0.08);
-            --shadow: 0 1px 3px rgba(0,0,0,0.1), 0 1px 2px rgba(0,0,0,0.06);
-            --shadow-lg: 0 4px 12px rgba(0,0,0,0.1);
-            --radius: 16px;
-            --radius-sm: 12px;
-        }
-
-        [data-theme="dark"] {
-            --bg-primary: #121212;
-            --bg-secondary: #1e1e1e;
-            --bg-card: #252525;
-            --bg-elevated: #2d2d2d;
-            --text-primary: #e8eaed;
-            --text-secondary: #9aa0a6;
-            --text-muted: #6e6e6e;
-            --accent: #8ab4f8;
-            --accent-light: #1e3a5f;
-            --accent-glow: rgba(138, 180, 248, 0.2);
-            --border: rgba(255, 255, 255, 0.1);
-            --shadow: 0 1px 3px rgba(0,0,0,0.3);
-            --shadow-lg: 0 4px 12px rgba(0,0,0,0.4);
-        }
-
-        body {
-            font-family: 'Inter', -apple-system, sans-serif;
-            background: var(--bg-primary);
-            color: var(--text-primary);
-            min-height: 100vh;
-            min-height: 100dvh;
-            overflow-x: hidden;
-            transition: background 0.3s, color 0.3s;
-        }
-
-        .app {
-            max-width: 480px;
-            margin: 0 auto;
-            padding: 0 16px;
-            padding-bottom: 100px;
-        }
-
-        /* Header */
-        .header {
-            padding: 20px 0 16px;
-            position: sticky;
-            top: 0;
-            background: var(--bg-primary);
-            z-index: 100;
-            transition: background 0.3s;
-        }
-
-        .header-content {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-
-        .logo {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .logo-icon {
-            width: 40px;
-            height: 40px;
-            background: var(--accent);
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .logo-icon svg {
-            width: 24px;
-            height: 24px;
-            color: white;
-        }
-
-        [data-theme="dark"] .logo-icon {
-            background: var(--accent-light);
-        }
-
-        [data-theme="dark"] .logo-icon svg {
-            color: var(--accent);
-        }
-
-        .logo-text {
-            font-weight: 700;
-            font-size: 22px;
-            letter-spacing: -0.5px;
-        }
-
-        .theme-toggle {
-            width: 44px;
-            height: 44px;
-            border: none;
-            background: var(--bg-card);
-            border-radius: var(--radius-sm);
-            color: var(--text-secondary);
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.2s;
-            box-shadow: var(--shadow);
-        }
-
-        .theme-toggle:hover {
-            background: var(--bg-elevated);
-            color: var(--text-primary);
-        }
-
-        .theme-toggle svg {
-            width: 22px;
-            height: 22px;
-        }
-
-        .theme-toggle .sun { display: none; }
-        .theme-toggle .moon { display: block; }
-        [data-theme="dark"] .theme-toggle .sun { display: block; }
-        [data-theme="dark"] .theme-toggle .moon { display: none; }
-
-        /* Search */
-        .search-container {
-            margin-bottom: 20px;
-        }
-
-        .search-input {
-            width: 100%;
-            padding: 14px 16px 14px 48px;
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: var(--radius);
-            color: var(--text-primary);
-            font-family: inherit;
-            font-size: 15px;
-            outline: none;
-            transition: all 0.2s;
-            box-shadow: var(--shadow);
-        }
-
-        .search-input::placeholder {
-            color: var(--text-muted);
-        }
-
-        .search-input:focus {
-            border-color: var(--accent);
-            box-shadow: 0 0 0 3px var(--accent-glow);
-        }
-
-        .search-wrapper {
-            position: relative;
-        }
-
-        .search-icon {
-            position: absolute;
-            left: 16px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: var(--text-muted);
-            width: 20px;
-            height: 20px;
-        }
-
-        /* Cards */
-        .section-title {
-            font-size: 13px;
-            font-weight: 600;
-            color: var(--text-muted);
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin-bottom: 12px;
-        }
-
-        .cards-grid {
-            display: grid;
-            gap: 12px;
-        }
-
-        .card-item {
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: var(--radius);
-            padding: 16px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            display: flex;
-            align-items: center;
-            gap: 14px;
-            box-shadow: var(--shadow);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .card-item::before {
-            content: '';
-            position: absolute;
-            left: 0;
-            top: 0;
-            bottom: 0;
-            width: 4px;
-            background: var(--card-color, var(--accent));
-        }
-
-        .card-item:hover {
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-lg);
-        }
-
-        .card-item:active {
-            transform: scale(0.98);
-        }
-
-        .card-logo {
-            width: 50px;
-            height: 50px;
-            background: var(--bg-elevated);
-            border-radius: var(--radius-sm);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 20px;
-            font-weight: 700;
-            color: var(--card-color, var(--accent));
-            flex-shrink: 0;
-        }
-
-        .card-info {
-            flex: 1;
-            min-width: 0;
-        }
-
-        .card-name {
-            font-weight: 600;
-            font-size: 16px;
-            margin-bottom: 4px;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        .card-number {
-            font-family: 'SF Mono', 'Roboto Mono', monospace;
-            font-size: 13px;
-            color: var(--text-secondary);
-        }
-
-        .card-arrow {
-            color: var(--text-muted);
-            transition: transform 0.2s;
-        }
-
-        .card-item:hover .card-arrow {
-            transform: translateX(4px);
-        }
-
-        /* Empty State */
-        .empty-state {
-            text-align: center;
-            padding: 60px 20px;
-        }
-
-        .empty-icon {
-            width: 80px;
-            height: 80px;
-            background: var(--bg-card);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto 20px;
-            box-shadow: var(--shadow);
-        }
-
-        .empty-icon svg {
-            width: 36px;
-            height: 36px;
-            color: var(--text-muted);
-        }
-
-        .empty-title {
-            font-size: 18px;
-            font-weight: 600;
-            margin-bottom: 8px;
-        }
-
-        .empty-text {
-            color: var(--text-secondary);
-            font-size: 14px;
-            line-height: 1.5;
-        }
-
-        /* FAB */
-        .fab {
-            position: fixed;
-            bottom: 24px;
-            right: 24px;
-            width: 60px;
-            height: 60px;
-            background: var(--accent);
-            border: none;
-            border-radius: 50%;
-            color: white;
-            cursor: pointer;
-            box-shadow: 0 4px 12px var(--accent-glow);
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            z-index: 1000;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        [data-theme="dark"] .fab {
-            background: var(--accent);
-            color: #121212;
-        }
-
-        .fab svg {
-            width: 28px;
-            height: 28px;
-            pointer-events: none;
-        }
-
-        .fab:hover {
-            transform: scale(1.1);
-            box-shadow: 0 6px 20px var(--accent-glow);
-        }
-
-        .fab:active {
-            transform: scale(0.95);
-        }
-
-        /* Modal */
-        .modal-overlay {
-            position: fixed;
-            inset: 0;
-            background: rgba(0, 0, 0, 0.5);
-            backdrop-filter: blur(4px);
-            z-index: 2000;
-            opacity: 0;
-            visibility: hidden;
-            transition: all 0.3s;
-        }
-
-        .modal-overlay.active {
-            opacity: 1;
-            visibility: visible;
-        }
-
-        .modal {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: var(--bg-secondary);
-            border-radius: var(--radius) var(--radius) 0 0;
-            z-index: 2001;
-            transform: translateY(100%);
-            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            max-height: 92vh;
-            overflow-y: auto;
-        }
-
-        .modal.active {
-            transform: translateY(0);
-        }
-
-        .modal-handle {
-            width: 36px;
-            height: 4px;
-            background: var(--text-muted);
-            border-radius: 2px;
-            margin: 12px auto;
-            opacity: 0.5;
-        }
-
-        .modal-header {
-            padding: 8px 20px 16px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            border-bottom: 1px solid var(--border);
-        }
-
-        .modal-title {
-            font-size: 18px;
-            font-weight: 700;
-        }
-
-        .modal-close {
-            width: 36px;
-            height: 36px;
-            border: none;
-            background: var(--bg-elevated);
-            border-radius: 50%;
-            color: var(--text-secondary);
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.2s;
-        }
-
-        .modal-close:hover {
-            background: var(--border);
-            color: var(--text-primary);
-        }
-
-        .modal-content {
-            padding: 20px;
-        }
-
-        /* Scanner */
-        .scanner-container {
-            width: 100%;
-            aspect-ratio: 1;
-            background: #000;
-            border-radius: var(--radius);
-            overflow: hidden;
-            position: relative;
-            margin-bottom: 16px;
-        }
-
-        #scanner {
-            width: 100%;
-            height: 100%;
-        }
-
-        #scanner video {
-            object-fit: cover !important;
-            border-radius: var(--radius);
-        }
-
-        .scanner-overlay {
-            position: absolute;
-            inset: 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            pointer-events: none;
-        }
-
-        .scanner-frame {
-            width: 75%;
-            aspect-ratio: 1.6;
-            border: 3px solid var(--accent);
-            border-radius: 12px;
-            box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.6);
-            position: relative;
-        }
-
-        /* Углы рамки вместо анимированной линии */
-        .scanner-frame::before,
-        .scanner-frame::after {
-            content: '';
-            position: absolute;
-            width: 20px;
-            height: 20px;
-            border-color: var(--accent);
-            border-style: solid;
-        }
-        
-        .scanner-frame::before {
-            top: -3px;
-            left: -3px;
-            border-width: 4px 0 0 4px;
-            border-radius: 8px 0 0 0;
-        }
-        
-        .scanner-frame::after {
-            top: -3px;
-            right: -3px;
-            border-width: 4px 4px 0 0;
-            border-radius: 0 8px 0 0;
-        }
-        
-        .scanner-corners {
-            position: absolute;
-            inset: 0;
-        }
-        
-        .scanner-corners::before,
-        .scanner-corners::after {
-            content: '';
-            position: absolute;
-            width: 20px;
-            height: 20px;
-            border-color: var(--accent);
-            border-style: solid;
-        }
-        
-        .scanner-corners::before {
-            bottom: -3px;
-            left: -3px;
-            border-width: 0 0 4px 4px;
-            border-radius: 0 0 0 8px;
-        }
-        
-        .scanner-corners::after {
-            bottom: -3px;
-            right: -3px;
-            border-width: 0 4px 4px 0;
-            border-radius: 0 0 8px 0;
-        }
-
-        .scanner-hint {
-            text-align: center;
-            color: var(--text-secondary);
-            font-size: 14px;
-            margin-bottom: 16px;
-        }
-
-        /* Scanned Preview */
-        .scanned-preview {
-            background: var(--bg-card);
-            border: 2px solid var(--success);
-            border-radius: var(--radius);
-            padding: 20px;
-            margin-bottom: 16px;
-        }
-
-        .scanned-preview-header {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-bottom: 16px;
-            color: var(--success);
-            font-weight: 600;
-        }
-
-        .scanned-preview-header svg {
-            width: 20px;
-            height: 20px;
-        }
-
-        .scanned-barcode {
-            background: white;
-            padding: 16px;
-            border-radius: var(--radius-sm);
-            margin-bottom: 12px;
-        }
-
-        .scanned-barcode svg {
-            max-width: 100%;
-            height: auto;
-        }
-
-        .rescan-btn {
-            width: 100%;
-            padding: 10px;
-            background: var(--bg-elevated);
-            border: 1px solid var(--border);
-            border-radius: var(--radius-sm);
-            color: var(--text-secondary);
-            font-family: inherit;
-            font-size: 14px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            transition: all 0.2s;
-        }
-
-        .rescan-btn:hover {
-            background: var(--border);
-            color: var(--text-primary);
-        }
-
-        .rescan-btn svg {
-            width: 18px;
-            height: 18px;
-        }
-
-        /* Form */
-        .form-group {
-            margin-bottom: 16px;
-        }
-
-        .form-label {
-            display: block;
-            font-size: 13px;
-            font-weight: 600;
-            color: var(--text-secondary);
-            margin-bottom: 8px;
-        }
-
-        .form-input {
-            width: 100%;
-            padding: 14px 16px;
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: var(--radius-sm);
-            color: var(--text-primary);
-            font-family: inherit;
-            font-size: 15px;
-            outline: none;
-            transition: all 0.2s;
-        }
-
-        .form-input:focus {
-            border-color: var(--accent);
-            box-shadow: 0 0 0 3px var(--accent-glow);
-        }
-
-        .form-input.mono {
-            font-family: 'SF Mono', 'Roboto Mono', monospace;
-            letter-spacing: 0.5px;
-        }
-
-        /* Color Picker */
-        .color-picker {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
-
-        .color-option {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            border: 3px solid transparent;
-            cursor: pointer;
-            transition: all 0.2s;
-            position: relative;
-        }
-
-        .color-option:hover {
-            transform: scale(1.1);
-        }
-
-        .color-option.selected {
-            border-color: var(--text-primary);
-        }
-
-        .color-option.selected::after {
-            content: '✓';
-            position: absolute;
-            inset: 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 16px;
-            font-weight: bold;
-            text-shadow: 0 1px 2px rgba(0,0,0,0.3);
-        }
-
-        /* Barcode Types */
-        .barcode-types {
-            display: flex;
-            gap: 8px;
-            flex-wrap: wrap;
-        }
-
-        .barcode-type {
-            padding: 10px 16px;
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: 24px;
-            color: var(--text-secondary);
-            font-family: inherit;
-            font-size: 13px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .barcode-type:hover {
-            border-color: var(--accent);
-            color: var(--accent);
-        }
-
-        .barcode-type.selected {
-            background: var(--accent);
-            border-color: var(--accent);
-            color: white;
-        }
-
-        [data-theme="dark"] .barcode-type.selected {
-            color: #121212;
-        }
-
-        /* Button */
-        .btn {
-            width: 100%;
-            padding: 16px;
-            background: var(--accent);
-            border: none;
-            border-radius: var(--radius-sm);
-            color: white;
-            font-family: inherit;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        [data-theme="dark"] .btn {
-            color: #121212;
-        }
-
-        .btn:hover {
-            opacity: 0.9;
-            transform: translateY(-1px);
-        }
-
-        .btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-            transform: none;
-        }
-
-        .btn-secondary {
-            background: var(--bg-elevated);
-            color: var(--text-primary);
-        }
-
-        .btn-danger {
-            background: var(--danger);
-            color: white;
-        }
-
-        /* Card View */
-        .card-view {
-            text-align: center;
-        }
-
-        .card-view-header {
-            margin-bottom: 24px;
-        }
-
-        .card-view-logo {
-            width: 72px;
-            height: 72px;
-            background: var(--bg-elevated);
-            border-radius: var(--radius);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 28px;
-            font-weight: 700;
-            margin: 0 auto 16px;
-        }
-
-        .card-view-name {
-            font-size: 24px;
-            font-weight: 700;
-            margin-bottom: 6px;
-        }
-
-        .card-view-number {
-            font-family: 'SF Mono', 'Roboto Mono', monospace;
-            font-size: 14px;
-            color: var(--text-secondary);
-        }
-
-        .barcode-display {
-            background: white;
-            padding: 24px;
-            border-radius: var(--radius);
-            margin-bottom: 16px;
-            box-shadow: var(--shadow);
-        }
-
-        .barcode-display svg, .barcode-display canvas {
-            max-width: 100%;
-            height: auto;
-        }
-
-        .brightness-hint {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            color: var(--text-muted);
-            font-size: 13px;
-            margin-bottom: 20px;
-        }
-
-        .brightness-hint svg {
-            width: 16px;
-            height: 16px;
-        }
-
-        .card-actions {
-            display: flex;
-            gap: 12px;
-        }
-
-        .card-actions .btn {
-            flex: 1;
-        }
-
-        /* Tabs */
-        .tabs {
-            display: flex;
-            gap: 4px;
-            background: var(--bg-elevated);
-            padding: 4px;
-            border-radius: var(--radius-sm);
-            margin-bottom: 20px;
-        }
-
-        .tab {
-            flex: 1;
-            padding: 12px;
-            border: none;
-            background: transparent;
-            color: var(--text-secondary);
-            font-family: inherit;
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-            border-radius: 10px;
-            transition: all 0.2s;
-        }
-
-        .tab.active {
-            background: var(--bg-card);
-            color: var(--text-primary);
-            box-shadow: var(--shadow);
-        }
-
-        /* Toast */
-        .toast {
-            position: fixed;
-            bottom: 100px;
-            left: 50%;
-            transform: translateX(-50%) translateY(100px);
-            background: var(--bg-card);
-            padding: 14px 24px;
-            border-radius: 30px;
-            font-size: 14px;
-            font-weight: 500;
-            box-shadow: var(--shadow-lg);
-            z-index: 3000;
-            opacity: 0;
-            transition: all 0.3s;
-            border: 1px solid var(--border);
-        }
-
-        .toast.show {
-            transform: translateX(-50%) translateY(0);
-            opacity: 1;
-        }
-
-        .toast.success {
-            background: var(--success);
-            color: white;
-            border-color: var(--success);
-        }
-
-        /* Animations */
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .card-item {
-            animation: fadeIn 0.3s ease backwards;
-        }
-
-        .card-item:nth-child(1) { animation-delay: 0.05s; }
-        .card-item:nth-child(2) { animation-delay: 0.1s; }
-        .card-item:nth-child(3) { animation-delay: 0.15s; }
-        .card-item:nth-child(4) { animation-delay: 0.2s; }
-        .card-item:nth-child(5) { animation-delay: 0.25s; }
-
-        /* Install Prompt */
-        .install-prompt {
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: var(--radius);
-            padding: 16px;
-            margin-bottom: 20px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            box-shadow: var(--shadow);
-        }
-
-        .install-prompt.hidden {
-            display: none;
-        }
-
-        .install-icon {
-            width: 44px;
-            height: 44px;
-            background: var(--accent-light);
-            border-radius: var(--radius-sm);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-shrink: 0;
-            color: var(--accent);
-        }
-
-        .install-icon svg {
-            width: 22px;
-            height: 22px;
-        }
-
-        .install-text {
-            flex: 1;
-        }
-
-        .install-title {
-            font-weight: 600;
-            margin-bottom: 2px;
-        }
-
-        .install-desc {
-            font-size: 13px;
-            color: var(--text-secondary);
-        }
-
-        .install-btn {
-            padding: 10px 18px;
-            background: var(--accent);
-            border: none;
-            border-radius: 24px;
-            color: white;
-            font-family: inherit;
-            font-size: 13px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        [data-theme="dark"] .install-btn {
-            color: #121212;
-        }
-
-        .install-btn:hover {
-            opacity: 0.9;
-        }
-
-        .install-close {
-            background: none;
-            border: none;
-            color: var(--text-muted);
-            cursor: pointer;
-            padding: 4px;
-        }
-
-        .install-close svg {
-            width: 20px;
-            height: 20px;
-        }
-
-        /* Divider */
-        .divider {
-            border: none;
-            border-top: 1px solid var(--border);
-            margin: 20px 0;
-        }
+        *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+        :root{--bg-primary:#f8f9fa;--bg-secondary:#fff;--bg-card:#fff;--bg-elevated:#f1f3f4;--text-primary:#1a1a1a;--text-secondary:#5f6368;--text-muted:#9aa0a6;--accent:#1a73e8;--accent-light:#e8f0fe;--accent-glow:rgba(26,115,232,0.2);--success:#34a853;--danger:#ea4335;--border:rgba(0,0,0,0.08);--shadow:0 1px 3px rgba(0,0,0,0.1),0 1px 2px rgba(0,0,0,0.06);--shadow-lg:0 4px 12px rgba(0,0,0,0.1);--radius:16px;--radius-sm:12px}
+        [data-theme="dark"]{--bg-primary:#121212;--bg-secondary:#1e1e1e;--bg-card:#252525;--bg-elevated:#2d2d2d;--text-primary:#e8eaed;--text-secondary:#9aa0a6;--text-muted:#6e6e6e;--accent:#8ab4f8;--accent-light:#1e3a5f;--accent-glow:rgba(138,180,248,0.2);--border:rgba(255,255,255,0.1);--shadow:0 1px 3px rgba(0,0,0,0.3);--shadow-lg:0 4px 12px rgba(0,0,0,0.4)}
+        body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg-primary);color:var(--text-primary);min-height:100vh;min-height:100dvh;overflow-x:hidden}
+        .app{max-width:480px;margin:0 auto;padding:0 16px 100px}
+        .header{padding:20px 0 16px;position:sticky;top:0;background:var(--bg-primary);z-index:100}
+        .header-content{display:flex;align-items:center;justify-content:space-between}
+        .logo{display:flex;align-items:center;gap:10px}
+        .logo-icon{width:40px;height:40px;background:var(--accent);border-radius:12px;display:flex;align-items:center;justify-content:center}
+        .logo-icon svg{width:24px;height:24px;color:#fff}
+        [data-theme="dark"] .logo-icon{background:var(--accent-light)}
+        [data-theme="dark"] .logo-icon svg{color:var(--accent)}
+        .logo-text{font-weight:700;font-size:22px}
+        .theme-toggle{width:44px;height:44px;border:none;background:var(--bg-card);border-radius:var(--radius-sm);color:var(--text-secondary);cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:var(--shadow)}
+        .theme-toggle svg{width:22px;height:22px}
+        .theme-toggle .sun{display:none}
+        .theme-toggle .moon{display:block}
+        [data-theme="dark"] .theme-toggle .sun{display:block}
+        [data-theme="dark"] .theme-toggle .moon{display:none}
+        .search-container{margin-bottom:20px}
+        .search-wrapper{position:relative}
+        .search-input{width:100%;padding:14px 16px 14px 48px;background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);color:var(--text-primary);font-family:inherit;font-size:15px;outline:none;box-shadow:var(--shadow)}
+        .search-input::placeholder{color:var(--text-muted)}
+        .search-input:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-glow)}
+        .search-icon{position:absolute;left:16px;top:50%;transform:translateY(-50%);color:var(--text-muted);width:20px;height:20px}
+        .section-title{font-size:13px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:12px}
+        .cards-grid{display:grid;gap:12px}
+        .card-item{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:16px;cursor:pointer;display:flex;align-items:center;gap:14px;box-shadow:var(--shadow);position:relative;overflow:hidden}
+        .card-item::before{content:'';position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--card-color,var(--accent))}
+        .card-item:active{transform:scale(0.98)}
+        .card-logo{width:50px;height:50px;background:var(--bg-elevated);border-radius:var(--radius-sm);display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:700;color:var(--card-color,var(--accent));flex-shrink:0}
+        .card-info{flex:1;min-width:0}
+        .card-name{font-weight:600;font-size:16px;margin-bottom:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+        .card-number{font-family:monospace;font-size:13px;color:var(--text-secondary)}
+        .card-arrow{color:var(--text-muted)}
+        .empty-state{text-align:center;padding:60px 20px}
+        .empty-icon{width:80px;height:80px;background:var(--bg-card);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 20px;box-shadow:var(--shadow)}
+        .empty-icon svg{width:36px;height:36px;color:var(--text-muted)}
+        .empty-title{font-size:18px;font-weight:600;margin-bottom:8px}
+        .empty-text{color:var(--text-secondary);font-size:14px}
+        .fab{position:fixed;bottom:24px;right:24px;width:60px;height:60px;background:var(--accent);border:none;border-radius:50%;color:#fff;cursor:pointer;box-shadow:0 4px 12px var(--accent-glow);z-index:1000;display:flex;align-items:center;justify-content:center}
+        [data-theme="dark"] .fab{color:#121212}
+        .fab svg{width:28px;height:28px}
+        .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.5);backdrop-filter:blur(4px);z-index:2000;opacity:0;visibility:hidden;transition:all .3s}
+        .modal-overlay.active{opacity:1;visibility:visible}
+        .modal{position:fixed;bottom:0;left:0;right:0;background:var(--bg-secondary);border-radius:var(--radius) var(--radius) 0 0;z-index:2001;transform:translateY(100%);transition:transform .4s cubic-bezier(0.4,0,0.2,1);max-height:92vh;overflow-y:auto}
+        .modal.active{transform:translateY(0)}
+        .modal-handle{width:36px;height:4px;background:var(--text-muted);border-radius:2px;margin:12px auto;opacity:.5}
+        .modal-header{padding:8px 20px 16px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border)}
+        .modal-title{font-size:18px;font-weight:700}
+        .modal-close{width:36px;height:36px;border:none;background:var(--bg-elevated);border-radius:50%;color:var(--text-secondary);cursor:pointer;display:flex;align-items:center;justify-content:center}
+        .modal-content{padding:20px}
+        .tabs{display:flex;gap:4px;background:var(--bg-elevated);padding:4px;border-radius:var(--radius-sm);margin-bottom:20px}
+        .tab{flex:1;padding:12px;border:none;background:transparent;color:var(--text-secondary);font-family:inherit;font-size:14px;font-weight:600;cursor:pointer;border-radius:10px}
+        .tab.active{background:var(--bg-card);color:var(--text-primary);box-shadow:var(--shadow)}
+        .scanner-wrapper{position:relative;width:100%;aspect-ratio:1;background:#000;border-radius:var(--radius);overflow:hidden;margin-bottom:16px}
+        .scanner-video{width:100%;height:100%;object-fit:cover}
+        .scanner-overlay{position:absolute;inset:0;display:flex;align-items:center;justify-content:center}
+        .scan-region{width:75%;aspect-ratio:1.6;position:relative;box-shadow:0 0 0 2000px rgba(0,0,0,0.6);border-radius:12px;border:3px solid var(--accent)}
+        .corner{position:absolute;width:24px;height:24px;border-color:#fff;border-style:solid}
+        .corner-tl{top:-2px;left:-2px;border-width:4px 0 0 4px;border-radius:8px 0 0 0}
+        .corner-tr{top:-2px;right:-2px;border-width:4px 4px 0 0;border-radius:0 8px 0 0}
+        .corner-bl{bottom:-2px;left:-2px;border-width:0 0 4px 4px;border-radius:0 0 0 8px}
+        .corner-br{bottom:-2px;right:-2px;border-width:0 4px 4px 0;border-radius:0 0 8px 0}
+        .scanner-hint{text-align:center;color:var(--text-secondary);font-size:14px;margin-bottom:16px}
+        .scanned-preview{background:var(--bg-card);border:2px solid var(--success);border-radius:var(--radius);padding:20px;margin-bottom:16px}
+        .scanned-header{display:flex;align-items:center;gap:10px;margin-bottom:16px;color:var(--success);font-weight:600}
+        .scanned-header svg{width:20px;height:20px}
+        .scanned-barcode{background:#fff;padding:16px;border-radius:var(--radius-sm);margin-bottom:12px;text-align:center}
+        .scanned-barcode svg{max-width:100%;height:auto}
+        .rescan-btn{width:100%;padding:12px;background:var(--bg-elevated);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text-secondary);font-family:inherit;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px}
+        .rescan-btn svg{width:18px;height:18px}
+        .form-group{margin-bottom:16px}
+        .form-label{display:block;font-size:13px;font-weight:600;color:var(--text-secondary);margin-bottom:8px}
+        .form-input{width:100%;padding:14px 16px;background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text-primary);font-family:inherit;font-size:15px;outline:none}
+        .form-input:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-glow)}
+        .form-input.mono{font-family:monospace;letter-spacing:.5px}
+        .color-picker{display:flex;gap:10px;flex-wrap:wrap}
+        .color-option{width:40px;height:40px;border-radius:50%;border:3px solid transparent;cursor:pointer;position:relative}
+        .color-option.selected{border-color:var(--text-primary)}
+        .color-option.selected::after{content:'✓';position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:bold;text-shadow:0 1px 2px rgba(0,0,0,.5)}
+        .barcode-types{display:flex;gap:8px;flex-wrap:wrap}
+        .barcode-type{padding:10px 16px;background:var(--bg-card);border:1px solid var(--border);border-radius:24px;color:var(--text-secondary);font-family:inherit;font-size:13px;font-weight:500;cursor:pointer}
+        .barcode-type.selected{background:var(--accent);border-color:var(--accent);color:#fff}
+        [data-theme="dark"] .barcode-type.selected{color:#121212}
+        .btn{display:block;width:100%;padding:16px;background:var(--accent);border:none;border-radius:var(--radius-sm);color:#fff;font-family:inherit;font-size:16px;font-weight:600;cursor:pointer;text-align:center}
+        [data-theme="dark"] .btn{color:#121212}
+        .btn-secondary{background:var(--bg-elevated);color:var(--text-primary)}
+        .btn-danger{background:var(--danger);color:#fff}
+        .card-view{text-align:center}
+        .card-view-logo{width:72px;height:72px;background:var(--bg-elevated);border-radius:var(--radius);display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:700;margin:0 auto 16px}
+        .card-view-name{font-size:24px;font-weight:700;margin-bottom:6px}
+        .card-view-number{font-family:monospace;font-size:14px;color:var(--text-secondary);margin-bottom:24px;word-break:break-all}
+        .barcode-display{background:#fff;padding:24px;border-radius:var(--radius);margin-bottom:16px;box-shadow:var(--shadow)}
+        .barcode-display svg,.barcode-display canvas{max-width:100%;height:auto}
+        .brightness-hint{display:flex;align-items:center;justify-content:center;gap:8px;color:var(--text-muted);font-size:13px;margin-bottom:20px}
+        .brightness-hint svg{width:16px;height:16px}
+        .card-actions{display:flex;gap:12px}
+        .card-actions .btn{flex:1}
+        .divider{border:none;border-top:1px solid var(--border);margin:20px 0}
+        .toast{position:fixed;bottom:100px;left:50%;transform:translateX(-50%) translateY(100px);background:var(--bg-card);padding:14px 24px;border-radius:30px;font-size:14px;font-weight:500;box-shadow:var(--shadow-lg);z-index:3000;opacity:0;transition:all .3s;border:1px solid var(--border)}
+        .toast.show{transform:translateX(-50%) translateY(0);opacity:1}
+        .toast.success{background:var(--success);color:#fff;border-color:var(--success)}
+        .install-prompt{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:20px;display:none;align-items:center;gap:12px;box-shadow:var(--shadow)}
+        .install-prompt.show{display:flex}
+        .install-icon{width:44px;height:44px;background:var(--accent-light);border-radius:var(--radius-sm);display:flex;align-items:center;justify-content:center;color:var(--accent)}
+        .install-icon svg{width:22px;height:22px}
+        .install-text{flex:1}
+        .install-title{font-weight:600;margin-bottom:2px}
+        .install-desc{font-size:13px;color:var(--text-secondary)}
+        .install-btn{padding:10px 18px;background:var(--accent);border:none;border-radius:24px;color:#fff;font-family:inherit;font-size:13px;font-weight:600;cursor:pointer}
+        [data-theme="dark"] .install-btn{color:#121212}
+        .install-close{background:none;border:none;color:var(--text-muted);cursor:pointer;padding:4px}
+        .install-close svg{width:20px;height:20px}
     </style>
 </head>
 <body>
@@ -1004,130 +137,75 @@
             <div class="header-content">
                 <div class="logo">
                     <div class="logo-icon">
-                        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                            <rect x="2" y="5" width="20" height="14" rx="2"/>
-                            <path d="M6 9h2M6 13h4"/>
-                        </svg>
+                        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M6 9h2M6 13h4"/></svg>
                     </div>
                     <span class="logo-text">CardKeeper</span>
                 </div>
-                <button class="theme-toggle" id="themeToggle" aria-label="Переключить тему">
-                    <svg class="sun" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                        <circle cx="12" cy="12" r="5"/>
-                        <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
-                    </svg>
-                    <svg class="moon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
-                    </svg>
+                <button class="theme-toggle" id="themeToggle">
+                    <svg class="sun" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+                    <svg class="moon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
                 </button>
             </div>
         </header>
-
-        <!-- Install Prompt -->
-        <div class="install-prompt hidden" id="installPrompt">
-            <div class="install-icon">
-                <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/>
-                </svg>
-            </div>
-            <div class="install-text">
-                <div class="install-title">Установить приложение</div>
-                <div class="install-desc">Быстрый доступ с рабочего стола</div>
-            </div>
+        <div class="install-prompt" id="installPrompt">
+            <div class="install-icon"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg></div>
+            <div class="install-text"><div class="install-title">Установить приложение</div><div class="install-desc">Быстрый доступ с рабочего стола</div></div>
             <button class="install-btn" id="installBtn">Установить</button>
-            <button class="install-close" id="installClose">
-                <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                    <path d="M18 6 6 18M6 6l12 12"/>
-                </svg>
-            </button>
+            <button class="install-close" id="installClose"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
         </div>
-
-        <!-- Search -->
         <div class="search-container">
             <div class="search-wrapper">
-                <svg class="search-icon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                    <circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>
-                </svg>
+                <svg class="search-icon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
                 <input type="text" class="search-input" placeholder="Поиск по названию или номеру..." id="searchInput">
             </div>
         </div>
-
-        <!-- Cards -->
-        <section class="cards-section">
+        <section>
             <div class="section-title" id="cardsCount">Мои карты</div>
             <div class="cards-grid" id="cardsList"></div>
             <div class="empty-state" id="emptyState">
-                <div class="empty-icon">
-                    <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
-                        <rect x="2" y="5" width="20" height="14" rx="2"/>
-                        <path d="M2 10h20"/>
-                    </svg>
-                </div>
+                <div class="empty-icon"><svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg></div>
                 <h3 class="empty-title">Карт пока нет</h3>
-                <p class="empty-text">Нажмите + чтобы добавить первую<br>карту лояльности</p>
+                <p class="empty-text">Нажмите + чтобы добавить первую карту</p>
             </div>
         </section>
     </div>
-
-    <!-- FAB -->
-    <button class="fab" id="addCardBtn" aria-label="Добавить карту">
-        <svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
-            <path d="M12 5v14M5 12h14"/>
-        </svg>
-    </button>
-
-    <!-- Add Modal -->
+    <button class="fab" id="addCardBtn"><svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></button>
     <div class="modal-overlay" id="addModalOverlay"></div>
     <div class="modal" id="addModal">
         <div class="modal-handle"></div>
         <div class="modal-header">
-            <h2 class="modal-title">Добавить карту</h2>
-            <button class="modal-close" id="addModalClose">
-                <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                    <path d="M18 6 6 18M6 6l12 12"/>
-                </svg>
-            </button>
+            <h2 class="modal-title" id="addModalTitle">Добавить карту</h2>
+            <button class="modal-close" id="addModalClose"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
         </div>
         <div class="modal-content">
             <div class="tabs">
                 <button class="tab active" data-tab="scan">📷 Сканировать</button>
                 <button class="tab" data-tab="manual">✏️ Вручную</button>
             </div>
-
-            <!-- Scan Tab -->
             <div id="scanTab">
                 <div id="scannerArea">
-                    <div class="scanner-container">
-                        <div id="scanner"></div>
+                    <div class="scanner-wrapper">
+                        <video id="scannerVideo" class="scanner-video" autoplay playsinline muted></video>
                         <div class="scanner-overlay">
-                            <div class="scanner-frame"><div class="scanner-corners"></div></div>
+                            <div class="scan-region">
+                                <div class="corner corner-tl"></div>
+                                <div class="corner corner-tr"></div>
+                                <div class="corner corner-bl"></div>
+                                <div class="corner corner-br"></div>
+                            </div>
                         </div>
                     </div>
                     <p class="scanner-hint">Наведите камеру на штрих-код или QR-код</p>
                 </div>
-                
-                <div id="scannedArea" style="display: none;">
+                <div id="scannedArea" style="display:none">
                     <div class="scanned-preview">
-                        <div class="scanned-preview-header">
-                            <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                                <path d="M20 6 9 17l-5-5"/>
-                            </svg>
-                            <span>Код отсканирован</span>
-                        </div>
+                        <div class="scanned-header"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg><span>Код отсканирован</span></div>
                         <div class="scanned-barcode" id="scannedBarcode"></div>
-                        <button class="rescan-btn" id="rescanBtn">
-                            <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                                <path d="M1 4v6h6M23 20v-6h-6"/>
-                                <path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15"/>
-                            </svg>
-                            Сканировать заново
-                        </button>
+                        <button class="rescan-btn" id="rescanBtn"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M1 4v6h6M23 20v-6h-6"/><path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15"/></svg>Сканировать заново</button>
                     </div>
                 </div>
             </div>
-
-            <!-- Manual Tab -->
-            <div id="manualTab" style="display: none;">
+            <div id="manualTab" style="display:none">
                 <div class="form-group">
                     <label class="form-label">Тип штрих-кода</label>
                     <div class="barcode-types" id="barcodeTypes">
@@ -1139,648 +217,196 @@
                     </div>
                 </div>
             </div>
-
-            <!-- Card Fields -->
-            <div id="cardFields" style="display: none;">
+            <div id="cardFields" style="display:none">
                 <hr class="divider">
-                
                 <div class="form-group">
                     <label class="form-label">Номер карты</label>
                     <input type="text" class="form-input mono" id="cardNumberInput" placeholder="Введите или отредактируйте номер">
                 </div>
-                
                 <div class="form-group">
                     <label class="form-label">Название магазина</label>
                     <input type="text" class="form-input" id="cardNameInput" placeholder="Например: Пятёрочка">
                 </div>
-                
                 <div class="form-group">
                     <label class="form-label">Цвет карты</label>
                     <div class="color-picker" id="colorPicker">
-                        <div class="color-option selected" style="background: #1a73e8;" data-color="#1a73e8"></div>
-                        <div class="color-option" style="background: #34a853;" data-color="#34a853"></div>
-                        <div class="color-option" style="background: #ea4335;" data-color="#ea4335"></div>
-                        <div class="color-option" style="background: #fbbc04;" data-color="#fbbc04"></div>
-                        <div class="color-option" style="background: #ff6d01;" data-color="#ff6d01"></div>
-                        <div class="color-option" style="background: #46bdc6;" data-color="#46bdc6"></div>
-                        <div class="color-option" style="background: #7baaf7;" data-color="#7baaf7"></div>
-                        <div class="color-option" style="background: #f06292;" data-color="#f06292"></div>
-                        <div class="color-option" style="background: #9575cd;" data-color="#9575cd"></div>
-                        <div class="color-option" style="background: #78909c;" data-color="#78909c"></div>
+                        <div class="color-option selected" style="background:#1a73e8" data-color="#1a73e8"></div>
+                        <div class="color-option" style="background:#34a853" data-color="#34a853"></div>
+                        <div class="color-option" style="background:#ea4335" data-color="#ea4335"></div>
+                        <div class="color-option" style="background:#fbbc04" data-color="#fbbc04"></div>
+                        <div class="color-option" style="background:#ff6d01" data-color="#ff6d01"></div>
+                        <div class="color-option" style="background:#46bdc6" data-color="#46bdc6"></div>
+                        <div class="color-option" style="background:#7baaf7" data-color="#7baaf7"></div>
+                        <div class="color-option" style="background:#f06292" data-color="#f06292"></div>
+                        <div class="color-option" style="background:#9575cd" data-color="#9575cd"></div>
+                        <div class="color-option" style="background:#78909c" data-color="#78909c"></div>
                     </div>
                 </div>
-                
-                <button class="btn" id="saveCardBtn">Сохранить карту</button>
+                <button class="btn" id="saveCardBtn" type="button">Сохранить карту</button>
             </div>
         </div>
     </div>
-
-    <!-- View Modal -->
     <div class="modal-overlay" id="viewModalOverlay"></div>
     <div class="modal" id="viewModal">
         <div class="modal-handle"></div>
         <div class="modal-header">
             <h2 class="modal-title">Карта</h2>
-            <button class="modal-close" id="viewModalClose">
-                <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                    <path d="M18 6 6 18M6 6l12 12"/>
-                </svg>
-            </button>
+            <button class="modal-close" id="viewModalClose"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
         </div>
         <div class="modal-content">
             <div class="card-view">
-                <div class="card-view-header">
-                    <div class="card-view-logo" id="viewCardLogo"></div>
-                    <h3 class="card-view-name" id="viewCardName"></h3>
-                    <p class="card-view-number" id="viewCardNumber"></p>
-                </div>
+                <div class="card-view-logo" id="viewCardLogo"></div>
+                <h3 class="card-view-name" id="viewCardName"></h3>
+                <p class="card-view-number" id="viewCardNumber"></p>
                 <div class="barcode-display" id="barcodeDisplay"></div>
-                <div class="brightness-hint">
-                    <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                        <circle cx="12" cy="12" r="5"/>
-                        <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
-                    </svg>
-                    Увеличьте яркость для сканирования
-                </div>
+                <div class="brightness-hint"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>Увеличьте яркость для сканирования</div>
                 <div class="card-actions">
-                    <button class="btn btn-secondary" id="editCardBtn">Изменить</button>
-                    <button class="btn btn-danger" id="deleteCardBtn">Удалить</button>
+                    <button class="btn btn-secondary" id="editCardBtn" type="button">Изменить</button>
+                    <button class="btn btn-danger" id="deleteCardBtn" type="button">Удалить</button>
                 </div>
             </div>
         </div>
     </div>
-
-    <!-- Toast -->
     <div class="toast" id="toast"></div>
-
-    <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
-    
     <script>
-        // State
-        let cards = JSON.parse(localStorage.getItem('cardkeeper_cards') || '[]');
-        let currentCard = null;
-        let scanner = null;
-        let scannedCode = null;
-        let scannedFormat = null;
-        let selectedColor = '#1a73e8';
-        let selectedBarcodeType = 'CODE128';
-        let deferredPrompt = null;
-        let isEditMode = false;
-
-        // Theme
-        const savedTheme = localStorage.getItem('cardkeeper_theme') || 'light';
-        document.documentElement.setAttribute('data-theme', savedTheme);
+        let cards=JSON.parse(localStorage.getItem('cardkeeper_cards')||'[]');
+        let currentCard=null,scannedCode=null,scannedFormat='CODE128',selectedColor='#1a73e8',selectedBarcodeType='CODE128',isEditMode=false,videoStream=null,scanCanvas=null,scanCtx=null,scanInterval=null;
+        const savedTheme=localStorage.getItem('cardkeeper_theme')||'light';
+        document.documentElement.setAttribute('data-theme',savedTheme);
         updateThemeColor();
-
-        // DOM
-        const $ = id => document.getElementById(id);
-        const cardsList = $('cardsList');
-        const emptyState = $('emptyState');
-        const cardsCount = $('cardsCount');
-        const searchInput = $('searchInput');
-        const addCardBtn = $('addCardBtn');
-        const addModal = $('addModal');
-        const addModalOverlay = $('addModalOverlay');
-        const addModalClose = $('addModalClose');
-        const viewModal = $('viewModal');
-        const viewModalOverlay = $('viewModalOverlay');
-        const viewModalClose = $('viewModalClose');
-        const tabs = document.querySelectorAll('.tab');
-        const scanTab = $('scanTab');
-        const manualTab = $('manualTab');
-        const scannerArea = $('scannerArea');
-        const scannedArea = $('scannedArea');
-        const cardFields = $('cardFields');
-        const cardNumberInput = $('cardNumberInput');
-        const cardNameInput = $('cardNameInput');
-        const colorPicker = $('colorPicker');
-        const barcodeTypes = $('barcodeTypes');
-        const saveCardBtn = $('saveCardBtn');
-        const deleteCardBtn = $('deleteCardBtn');
-        const editCardBtn = $('editCardBtn');
-        const toast = $('toast');
-        const themeToggle = $('themeToggle');
-        const installPrompt = $('installPrompt');
-        const installBtn = $('installBtn');
-        const installClose = $('installClose');
-        const rescanBtn = $('rescanBtn');
-
-        // Init
+        const $=id=>document.getElementById(id);
+        const cardsList=$('cardsList'),emptyState=$('emptyState'),cardsCount=$('cardsCount'),searchInput=$('searchInput'),addCardBtn=$('addCardBtn'),addModal=$('addModal'),addModalOverlay=$('addModalOverlay'),addModalClose=$('addModalClose'),addModalTitle=$('addModalTitle'),viewModal=$('viewModal'),viewModalOverlay=$('viewModalOverlay'),viewModalClose=$('viewModalClose'),tabs=document.querySelectorAll('.tab'),scanTab=$('scanTab'),manualTab=$('manualTab'),scannerArea=$('scannerArea'),scannedArea=$('scannedArea'),scannerVideo=$('scannerVideo'),cardFields=$('cardFields'),cardNumberInput=$('cardNumberInput'),cardNameInput=$('cardNameInput'),colorPicker=$('colorPicker'),barcodeTypes=$('barcodeTypes'),saveCardBtn=$('saveCardBtn'),deleteCardBtn=$('deleteCardBtn'),editCardBtn=$('editCardBtn'),rescanBtn=$('rescanBtn'),toast=$('toast'),themeToggle=$('themeToggle'),installPrompt=$('installPrompt'),installBtn=$('installBtn'),installClose=$('installClose');
         renderCards();
-        setupEventListeners();
-
-        // PWA Install
-        window.addEventListener('beforeinstallprompt', (e) => {
-            e.preventDefault();
-            deferredPrompt = e;
-            installPrompt.classList.remove('hidden');
-        });
-
-        installBtn.addEventListener('click', async () => {
-            if (deferredPrompt) {
-                deferredPrompt.prompt();
-                const { outcome } = await deferredPrompt.userChoice;
-                if (outcome === 'accepted') {
-                    showToast('Приложение установлено!', 'success');
-                }
-                deferredPrompt = null;
-                installPrompt.classList.add('hidden');
-            }
-        });
-
-        installClose.addEventListener('click', () => {
-            installPrompt.classList.add('hidden');
-        });
-
-        // Theme Toggle
-        themeToggle.addEventListener('click', () => {
-            const current = document.documentElement.getAttribute('data-theme');
-            const next = current === 'dark' ? 'light' : 'dark';
-            document.documentElement.setAttribute('data-theme', next);
-            localStorage.setItem('cardkeeper_theme', next);
-            updateThemeColor();
-        });
-
-        function updateThemeColor() {
-            const theme = document.documentElement.getAttribute('data-theme');
-            const meta = document.querySelector('meta[name="theme-color"]');
-            meta.setAttribute('content', theme === 'dark' ? '#121212' : '#ffffff');
+        let deferredPrompt=null;
+        window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredPrompt=e;installPrompt.classList.add('show')});
+        installBtn.onclick=async()=>{if(deferredPrompt){deferredPrompt.prompt();const{outcome}=await deferredPrompt.userChoice;if(outcome==='accepted')showToast('Приложение установлено!','success');deferredPrompt=null;installPrompt.classList.remove('show')}};
+        installClose.onclick=()=>installPrompt.classList.remove('show');
+        themeToggle.onclick=()=>{const c=document.documentElement.getAttribute('data-theme'),n=c==='dark'?'light':'dark';document.documentElement.setAttribute('data-theme',n);localStorage.setItem('cardkeeper_theme',n);updateThemeColor()};
+        function updateThemeColor(){document.querySelector('meta[name="theme-color"]').content=document.documentElement.getAttribute('data-theme')==='dark'?'#121212':'#ffffff'}
+        addCardBtn.onclick=openAddModal;
+        addModalOverlay.onclick=closeAddModal;
+        addModalClose.onclick=closeAddModal;
+        viewModalOverlay.onclick=closeViewModal;
+        viewModalClose.onclick=closeViewModal;
+        tabs.forEach(t=>t.onclick=()=>switchTab(t.dataset.tab));
+        colorPicker.querySelectorAll('.color-option').forEach(o=>o.onclick=()=>{colorPicker.querySelector('.selected')?.classList.remove('selected');o.classList.add('selected');selectedColor=o.dataset.color});
+        barcodeTypes.querySelectorAll('.barcode-type').forEach(b=>b.onclick=()=>{barcodeTypes.querySelector('.selected')?.classList.remove('selected');b.classList.add('selected');selectedBarcodeType=b.dataset.type});
+        cardNumberInput.oninput=()=>{scannedCode=cardNumberInput.value.trim()};
+        saveCardBtn.onclick=saveCard;
+        deleteCardBtn.onclick=deleteCard;
+        editCardBtn.onclick=editCard;
+        rescanBtn.onclick=rescan;
+        searchInput.oninput=()=>renderCards(searchInput.value);
+        function renderCards(filter=''){
+            const f=filter.toLowerCase(),filtered=cards.filter(c=>c.name.toLowerCase().includes(f)||c.number.toLowerCase().includes(f));
+            cardsCount.textContent='Мои карты ('+cards.length+')';
+            if(!filtered.length){cardsList.innerHTML='';emptyState.style.display=cards.length?'none':'block';if(cards.length&&filter)cardsList.innerHTML='<p style="text-align:center;color:var(--text-muted);padding:40px">Ничего не найдено</p>';return}
+            emptyState.style.display='none';
+            cardsList.innerHTML=filtered.map(c=>'<div class="card-item" style="--card-color:'+c.color+'" data-id="'+c.id+'"><div class="card-logo" style="color:'+c.color+'">'+c.name.charAt(0).toUpperCase()+'</div><div class="card-info"><div class="card-name">'+escapeHtml(c.name)+'</div><div class="card-number">'+formatNum(c.number)+'</div></div><svg class="card-arrow" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg></div>').join('');
+            cardsList.querySelectorAll('.card-item').forEach(i=>i.onclick=()=>openViewModal(i.dataset.id))
         }
-
-        // Event Listeners
-        function setupEventListeners() {
-            addCardBtn.addEventListener('click', openAddModal);
-            addModalOverlay.addEventListener('click', closeAddModal);
-            addModalClose.addEventListener('click', closeAddModal);
-            viewModalOverlay.addEventListener('click', closeViewModal);
-            viewModalClose.addEventListener('click', closeViewModal);
-
-            tabs.forEach(tab => {
-                tab.addEventListener('click', () => switchTab(tab.dataset.tab));
-            });
-
-            colorPicker.querySelectorAll('.color-option').forEach(opt => {
-                opt.addEventListener('click', () => selectColor(opt));
-            });
-
-            barcodeTypes.querySelectorAll('.barcode-type').forEach(btn => {
-                btn.addEventListener('click', () => {
-                    barcodeTypes.querySelector('.selected')?.classList.remove('selected');
-                    btn.classList.add('selected');
-                    selectedBarcodeType = btn.dataset.type;
-                });
-            });
-
-            cardNumberInput.addEventListener('input', () => {
-                if (cardNumberInput.value.trim()) {
-                    scannedCode = cardNumberInput.value.trim();
-                    scannedFormat = selectedBarcodeType;
-                }
-            });
-
-            saveCardBtn.addEventListener('click', saveCard);
-            deleteCardBtn.addEventListener('click', deleteCard);
-            editCardBtn.addEventListener('click', editCard);
-            rescanBtn.addEventListener('click', rescan);
-
-            searchInput.addEventListener('input', () => {
-                renderCards(searchInput.value);
-            });
-        }
-
-        function selectColor(opt) {
-            colorPicker.querySelector('.selected')?.classList.remove('selected');
-            opt.classList.add('selected');
-            selectedColor = opt.dataset.color;
-        }
-
-        // Render Cards
-        function renderCards(filter = '') {
-            const filterLower = filter.toLowerCase();
-            const filtered = cards.filter(card => 
-                card.name.toLowerCase().includes(filterLower) ||
-                card.number.toLowerCase().includes(filterLower)
-            );
-
-            cardsCount.textContent = `Мои карты (${cards.length})`;
-
-            if (filtered.length === 0) {
-                cardsList.innerHTML = '';
-                emptyState.style.display = cards.length === 0 ? 'block' : 'none';
-                if (cards.length > 0 && filter) {
-                    cardsList.innerHTML = `<p style="text-align: center; color: var(--text-muted); padding: 40px;">Ничего не найдено</p>`;
-                }
-                return;
-            }
-
-            emptyState.style.display = 'none';
-            cardsList.innerHTML = filtered.map(card => `
-                <div class="card-item" style="--card-color: ${card.color}" data-id="${card.id}">
-                    <div class="card-logo" style="color: ${card.color}">${card.name.charAt(0).toUpperCase()}</div>
-                    <div class="card-info">
-                        <div class="card-name">${escapeHtml(card.name)}</div>
-                        <div class="card-number">${formatCardNumber(card.number)}</div>
-                    </div>
-                    <svg class="card-arrow" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                        <path d="m9 18 6-6-6-6"/>
-                    </svg>
-                </div>
-            `).join('');
-
-            cardsList.querySelectorAll('.card-item').forEach(item => {
-                item.addEventListener('click', () => openViewModal(item.dataset.id));
-            });
-        }
-
-        // Add Modal
-        function openAddModal() {
-            isEditMode = false;
-            currentCard = null;
-            resetAddForm();
-            addModal.classList.add('active');
-            addModalOverlay.classList.add('active');
-            switchTab('scan');
-        }
-
-        function closeAddModal() {
-            addModal.classList.remove('active');
-            addModalOverlay.classList.remove('active');
-            stopScanner();
-            resetAddForm();
-        }
-
-        function resetAddForm() {
-            scannedCode = null;
-            scannedFormat = null;
-            cardNumberInput.value = '';
-            cardNameInput.value = '';
-            cardFields.style.display = 'none';
-            scannerArea.style.display = 'block';
-            scannedArea.style.display = 'none';
-            
-            colorPicker.querySelector('.selected')?.classList.remove('selected');
-            colorPicker.querySelector('[data-color="#1a73e8"]').classList.add('selected');
-            selectedColor = '#1a73e8';
-            
-            barcodeTypes.querySelector('.selected')?.classList.remove('selected');
-            barcodeTypes.querySelector('[data-type="CODE128"]').classList.add('selected');
-            selectedBarcodeType = 'CODE128';
-        }
-
-        // Tabs
-        function switchTab(tab) {
-            tabs.forEach(t => t.classList.toggle('active', t.dataset.tab === tab));
-            
-            if (tab === 'scan') {
-                scanTab.style.display = 'block';
-                manualTab.style.display = 'none';
-                if (!scannedCode) {
-                    startScanner();
-                }
-            } else {
-                scanTab.style.display = 'none';
-                manualTab.style.display = 'block';
-                stopScanner();
-                cardFields.style.display = 'block';
+        function openAddModal(){isEditMode=false;currentCard=null;addModalTitle.textContent='Добавить карту';resetForm();addModal.classList.add('active');addModalOverlay.classList.add('active');switchTab('scan')}
+        function closeAddModal(){addModal.classList.remove('active');addModalOverlay.classList.remove('active');stopCamera();resetForm()}
+        function resetForm(){scannedCode=null;scannedFormat='CODE128';cardNumberInput.value='';cardNameInput.value='';cardFields.style.display='none';scannerArea.style.display='block';scannedArea.style.display='none';colorPicker.querySelector('.selected')?.classList.remove('selected');colorPicker.querySelector('[data-color="#1a73e8"]')?.classList.add('selected');selectedColor='#1a73e8';barcodeTypes.querySelector('.selected')?.classList.remove('selected');barcodeTypes.querySelector('[data-type="CODE128"]')?.classList.add('selected');selectedBarcodeType='CODE128'}
+        function switchTab(tab){tabs.forEach(t=>t.classList.toggle('active',t.dataset.tab===tab));if(tab==='scan'){scanTab.style.display='block';manualTab.style.display='none';if(!scannedCode)startCamera()}else{scanTab.style.display='none';manualTab.style.display='block';stopCamera();cardFields.style.display='block'}}
+        async function startCamera(){
+            try{
+                const constraints={video:{facingMode:'environment',width:{ideal:1280},height:{ideal:720}},audio:false};
+                videoStream=await navigator.mediaDevices.getUserMedia(constraints);
+                scannerVideo.srcObject=videoStream;
+                await new Promise(r=>{scannerVideo.onloadedmetadata=r});
+                await scannerVideo.play();
+                startScanning()
+            }catch(e){
+                console.error('Camera error:',e);
+                let m='Не удалось запустить камеру';
+                if(e.name==='NotAllowedError')m='Разрешите доступ к камере';
+                else if(e.name==='NotFoundError')m='Камера не найдена';
+                showToast(m);
+                switchTab('manual')
             }
         }
-
-        // Scanner
-        async function startScanner() {
-            try {
-                // Проверяем доступность камеры
-                if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-                    showToast('Камера не поддерживается');
-                    switchTab('manual');
-                    return;
-                }
-                
-                scanner = new Html5Qrcode('scanner');
-                
-                // Получаем список камер
-                const cameras = await Html5Qrcode.getCameras();
-                
-                if (!cameras || cameras.length === 0) {
-                    showToast('Камера не найдена');
-                    switchTab('manual');
-                    return;
-                }
-                
-                // Предпочитаем заднюю камеру
-                let cameraId = cameras[0].id;
-                for (const cam of cameras) {
-                    if (cam.label.toLowerCase().includes('back') || 
-                        cam.label.toLowerCase().includes('rear') ||
-                        cam.label.toLowerCase().includes('задн')) {
-                        cameraId = cam.id;
-                        break;
-                    }
-                }
-                
-                await scanner.start(
-                    cameraId,
-                    { 
-                        fps: 10, 
-                        qrbox: { width: 250, height: 150 },
-                        aspectRatio: 1,
-                        disableFlip: false
-                    },
-                    onScanSuccess,
-                    () => {}
-                );
-            } catch (err) {
-                console.error('Scanner error:', err);
-                
-                let message = 'Не удалось запустить камеру';
-                if (err.name === 'NotAllowedError') {
-                    message = 'Разрешите доступ к камере в настройках';
-                } else if (err.name === 'NotFoundError') {
-                    message = 'Камера не найдена';
-                } else if (err.name === 'NotReadableError') {
-                    message = 'Камера занята другим приложением';
-                }
-                
-                showToast(message);
-                // Переключаем на ручной ввод при ошибке
-                setTimeout(() => switchTab('manual'), 1000);
-            }
+        function stopCamera(){if(scanInterval){clearInterval(scanInterval);scanInterval=null}if(videoStream){videoStream.getTracks().forEach(t=>t.stop());videoStream=null}scannerVideo.srcObject=null}
+        function startScanning(){
+            if(!window.BarcodeDetector){loadZXing();return}
+            const detector=new BarcodeDetector({formats:['qr_code','ean_13','ean_8','code_128','code_39','upc_a','upc_e','itf']});
+            scanInterval=setInterval(async()=>{
+                if(!videoStream||scannerVideo.paused)return;
+                try{
+                    const codes=await detector.detect(scannerVideo);
+                    if(codes.length>0){onCodeScanned(codes[0].rawValue,codes[0].format)}
+                }catch(e){}
+            },300)
         }
-
-        function stopScanner() {
-            if (scanner && scanner.isScanning) {
-                scanner.stop().catch(console.error);
-            }
+        function loadZXing(){
+            const s=document.createElement('script');
+            s.src='https://unpkg.com/@aspect-build/aspect-build@0.0.1/dist/aspect-build.min.js';
+            s.onerror=()=>fallbackScanning();
+            s.onload=()=>fallbackScanning();
+            document.head.appendChild(s)
         }
-
-        function onScanSuccess(decodedText, decodedResult) {
-            scannedCode = decodedText;
-            scannedFormat = mapFormat(decodedResult.result.format?.formatName || 'CODE_128');
-            
-            stopScanner();
-            showScannedPreview();
-            
-            if (navigator.vibrate) {
-                navigator.vibrate(100);
-            }
-            
-            showToast('Код отсканирован!', 'success');
+        function fallbackScanning(){
+            scanCanvas=document.createElement('canvas');
+            scanCtx=scanCanvas.getContext('2d');
+            scanInterval=setInterval(()=>{
+                if(!videoStream||scannerVideo.paused)return;
+                scanCanvas.width=scannerVideo.videoWidth;
+                scanCanvas.height=scannerVideo.videoHeight;
+                scanCtx.drawImage(scannerVideo,0,0)
+            },500)
         }
-
-        function showScannedPreview() {
-            scannerArea.style.display = 'none';
-            scannedArea.style.display = 'block';
-            cardFields.style.display = 'block';
-            
-            cardNumberInput.value = scannedCode;
-            
-            // Render preview barcode
-            const container = $('scannedBarcode');
-            container.innerHTML = '';
-            
-            const format = getBarcodeFormat(scannedCode, scannedFormat);
-            
-            if (format === 'QR') {
-                const qrDiv = document.createElement('div');
-                container.appendChild(qrDiv);
-                new QRCode(qrDiv, { text: scannedCode, width: 150, height: 150 });
-            } else {
-                const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-                container.appendChild(svg);
-                try {
-                    JsBarcode(svg, scannedCode, {
-                        format: format,
-                        width: 2,
-                        height: 60,
-                        displayValue: true,
-                        fontSize: 12,
-                        margin: 5
-                    });
-                } catch (e) {
-                    JsBarcode(svg, scannedCode, {
-                        format: 'CODE128',
-                        width: 2,
-                        height: 60,
-                        displayValue: true,
-                        fontSize: 12,
-                        margin: 5
-                    });
-                }
-            }
+        function onCodeScanned(code,format){scannedCode=code;scannedFormat=mapFormat(format||'code_128');stopCamera();showScannedPreview();if(navigator.vibrate)navigator.vibrate(100);showToast('Код отсканирован!','success')}
+        function mapFormat(f){const m={'qr_code':'QR','ean_13':'EAN13','ean_8':'EAN8','code_128':'CODE128','code_39':'CODE39','upc_a':'CODE128','upc_e':'CODE128','itf':'CODE128','QR_CODE':'QR','EAN_13':'EAN13','EAN_8':'EAN8','CODE_128':'CODE128','CODE_39':'CODE39'};return m[f]||'CODE128'}
+        function showScannedPreview(){scannerArea.style.display='none';scannedArea.style.display='block';cardFields.style.display='block';cardNumberInput.value=scannedCode;const c=$('scannedBarcode');c.innerHTML='';renderBarcode(c,scannedCode,scannedFormat,150,60)}
+        function rescan(){scannedCode=null;scannedFormat='CODE128';cardNumberInput.value='';scannerArea.style.display='block';scannedArea.style.display='none';cardFields.style.display='none';startCamera()}
+        function getBestFormat(n,p){if(p==='QR')return'QR';const d=/^\d+$/.test(n);if(p==='EAN13'&&d&&n.length===13)return'EAN13';if(p==='EAN8'&&d&&n.length===8)return'EAN8';if(p==='CODE39'&&/^[A-Z0-9\-.\$\/\+\% ]+$/i.test(n))return'CODE39';return'CODE128'}
+        function renderBarcode(container,num,fmt,qrSize=200,barH=80){
+            const f=getBestFormat(num,fmt);
+            if(f==='QR'){const d=document.createElement('div');container.appendChild(d);new QRCode(d,{text:num,width:qrSize,height:qrSize})}
+            else{const svg=document.createElementNS('http://www.w3.org/2000/svg','svg');container.appendChild(svg);try{JsBarcode(svg,num,{format:f,width:2,height:barH,displayValue:true,fontSize:14,margin:10})}catch(e){JsBarcode(svg,num,{format:'CODE128',width:2,height:barH,displayValue:true,fontSize:14,margin:10})}}
         }
-
-        function rescan() {
-            scannedCode = null;
-            scannedFormat = null;
-            cardNumberInput.value = '';
-            scannerArea.style.display = 'block';
-            scannedArea.style.display = 'none';
-            cardFields.style.display = 'none';
-            startScanner();
+        function saveCard(){
+            const num=cardNumberInput.value.trim(),name=cardNameInput.value.trim();
+            if(!num){showToast('Введите номер карты');return}
+            if(!name){showToast('Введите название магазина');return}
+            const card={id:isEditMode&&currentCard?currentCard.id:Date.now().toString(),name,number:num,format:scannedFormat||selectedBarcodeType,color:selectedColor,createdAt:isEditMode&&currentCard?currentCard.createdAt:new Date().toISOString()};
+            if(isEditMode&&currentCard){const i=cards.findIndex(c=>c.id===currentCard.id);if(i!==-1)cards[i]=card}else cards.unshift(card);
+            saveCards();renderCards();closeAddModal();showToast(isEditMode?'Карта обновлена':'Карта добавлена','success');currentCard=null;isEditMode=false
         }
-
-        function mapFormat(format) {
-            const map = {
-                'QR_CODE': 'QR',
-                'EAN_13': 'EAN13',
-                'EAN_8': 'EAN8',
-                'CODE_128': 'CODE128',
-                'CODE_39': 'CODE39',
-                'ITF': 'ITF14',
-                'UPC_A': 'CODE128',
-                'UPC_E': 'CODE128'
-            };
-            return map[format] || 'CODE128';
+        function openViewModal(id){
+            currentCard=cards.find(c=>c.id===id);if(!currentCard)return;
+            $('viewCardLogo').textContent=currentCard.name.charAt(0).toUpperCase();
+            $('viewCardLogo').style.color=currentCard.color;
+            $('viewCardName').textContent=currentCard.name;
+            $('viewCardNumber').textContent=currentCard.number;
+            const d=$('barcodeDisplay');d.innerHTML='';
+            renderBarcode(d,currentCard.number,currentCard.format,200,80);
+            viewModal.classList.add('active');viewModalOverlay.classList.add('active');
+            if('wakeLock'in navigator)navigator.wakeLock.request('screen').catch(()=>{})
         }
-
-        // Save Card
-        function saveCard() {
-            const number = cardNumberInput.value.trim();
-            const name = cardNameInput.value.trim();
-            
-            if (!number) {
-                showToast('Введите номер карты');
-                return;
-            }
-            
-            if (!name) {
-                showToast('Введите название магазина');
-                return;
-            }
-
-            const card = {
-                id: isEditMode && currentCard ? currentCard.id : Date.now().toString(),
-                name,
-                number,
-                format: scannedFormat || selectedBarcodeType,
-                color: selectedColor,
-                createdAt: isEditMode && currentCard ? currentCard.createdAt : new Date().toISOString()
-            };
-
-            if (isEditMode && currentCard) {
-                const index = cards.findIndex(c => c.id === currentCard.id);
-                cards[index] = card;
-            } else {
-                cards.unshift(card);
-            }
-
-            saveCards();
-            renderCards();
-            closeAddModal();
-            showToast(isEditMode ? 'Карта обновлена' : 'Карта добавлена', 'success');
-            currentCard = null;
-            isEditMode = false;
-        }
-
-        // View Modal
-        function getBarcodeFormat(number, preferredFormat) {
-            // CODE128 поддерживает любые ASCII символы
-            // EAN13/EAN8 только цифры определённой длины
-            // CODE39 буквы, цифры и некоторые спецсимволы
-            
-            const isOnlyDigits = /^\d+$/.test(number);
-            
-            if (preferredFormat === 'QR') return 'QR';
-            if (preferredFormat === 'EAN13' && isOnlyDigits && number.length === 13) return 'EAN13';
-            if (preferredFormat === 'EAN8' && isOnlyDigits && number.length === 8) return 'EAN8';
-            if (preferredFormat === 'CODE39') {
-                // CODE39 поддерживает A-Z, 0-9, -.$/+% и пробел
-                if (/^[A-Z0-9\-.\$\/\+\% ]+$/i.test(number)) return 'CODE39';
-            }
-            
-            // Fallback на CODE128 - поддерживает всё
-            return 'CODE128';
-        }
-
-        function openViewModal(cardId) {
-            currentCard = cards.find(c => c.id === cardId);
-            if (!currentCard) return;
-
-            $('viewCardLogo').textContent = currentCard.name.charAt(0).toUpperCase();
-            $('viewCardLogo').style.color = currentCard.color;
-            $('viewCardName').textContent = currentCard.name;
-            $('viewCardNumber').textContent = currentCard.number;
-
-            const display = $('barcodeDisplay');
-            display.innerHTML = '';
-
-            const format = getBarcodeFormat(currentCard.number, currentCard.format);
-
-            if (format === 'QR') {
-                const qrDiv = document.createElement('div');
-                display.appendChild(qrDiv);
-                new QRCode(qrDiv, { text: currentCard.number, width: 200, height: 200 });
-            } else {
-                const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-                display.appendChild(svg);
-                try {
-                    JsBarcode(svg, currentCard.number, {
-                        format: format,
-                        width: 2,
-                        height: 80,
-                        displayValue: true,
-                        fontSize: 14,
-                        margin: 10
-                    });
-                } catch (e) {
-                    // Последний fallback
-                    JsBarcode(svg, currentCard.number, {
-                        format: 'CODE128',
-                        width: 2,
-                        height: 80,
-                        displayValue: true,
-                        fontSize: 14,
-                        margin: 10
-                    });
-                }
-            }
-
-            viewModal.classList.add('active');
-            viewModalOverlay.classList.add('active');
-
-            if ('wakeLock' in navigator) {
-                navigator.wakeLock.request('screen').catch(() => {});
-            }
-        }
-
-        function closeViewModal() {
-            viewModal.classList.remove('active');
-            viewModalOverlay.classList.remove('active');
-        }
-
-        // Edit Card
-        function editCard() {
-            closeViewModal();
-            
-            setTimeout(() => {
-                isEditMode = true;
-                resetAddForm();
-                
-                addModal.classList.add('active');
-                addModalOverlay.classList.add('active');
-                switchTab('manual');
-                
-                cardNumberInput.value = currentCard.number;
-                cardNameInput.value = currentCard.name;
-                scannedCode = currentCard.number;
-                scannedFormat = currentCard.format;
-                selectedColor = currentCard.color;
-                selectedBarcodeType = currentCard.format;
-                
-                // Select barcode type
+        function closeViewModal(){viewModal.classList.remove('active');viewModalOverlay.classList.remove('active')}
+        function editCard(){
+            if(!currentCard)return;closeViewModal();
+            setTimeout(()=>{
+                isEditMode=true;addModalTitle.textContent='Редактировать карту';
+                addModal.classList.add('active');addModalOverlay.classList.add('active');
+                tabs.forEach(t=>t.classList.toggle('active',t.dataset.tab==='manual'));
+                scanTab.style.display='none';manualTab.style.display='block';
+                cardNumberInput.value=currentCard.number;cardNameInput.value=currentCard.name;
+                scannedCode=currentCard.number;scannedFormat=currentCard.format;selectedColor=currentCard.color;selectedBarcodeType=currentCard.format;
                 barcodeTypes.querySelector('.selected')?.classList.remove('selected');
-                const typeBtn = barcodeTypes.querySelector(`[data-type="${currentCard.format}"]`);
-                if (typeBtn) typeBtn.classList.add('selected');
-                
-                // Select color
+                (barcodeTypes.querySelector('[data-type="'+currentCard.format+'"]')||barcodeTypes.querySelector('[data-type="CODE128"]'))?.classList.add('selected');
                 colorPicker.querySelector('.selected')?.classList.remove('selected');
-                const colorOpt = colorPicker.querySelector(`[data-color="${currentCard.color}"]`);
-                if (colorOpt) colorOpt.classList.add('selected');
-                
-                cardFields.style.display = 'block';
-            }, 300);
+                colorPicker.querySelector('[data-color="'+currentCard.color+'"]')?.classList.add('selected');
+                cardFields.style.display='block'
+            },300)
         }
-
-        // Delete Card
-        function deleteCard() {
-            if (confirm(`Удалить карту "${currentCard.name}"?`)) {
-                cards = cards.filter(c => c.id !== currentCard.id);
-                saveCards();
-                renderCards();
-                closeViewModal();
-                showToast('Карта удалена');
-            }
-        }
-
-        // Storage
-        function saveCards() {
-            localStorage.setItem('cardkeeper_cards', JSON.stringify(cards));
-        }
-
-        // Toast
-        function showToast(message, type = '') {
-            toast.textContent = message;
-            toast.className = 'toast show' + (type ? ' ' + type : '');
-            setTimeout(() => toast.classList.remove('show'), 2500);
-        }
-
-        // Helpers
-        function escapeHtml(text) {
-            const div = document.createElement('div');
-            div.textContent = text;
-            return div.innerHTML;
-        }
-
-        function formatCardNumber(number) {
-            if (number.length > 20) {
-                return number.substring(0, 10) + '...' + number.substring(number.length - 6);
-            }
-            return number;
-        }
-
-        // Service Worker
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('sw.js').catch(console.error);
-        }
+        function deleteCard(){if(!currentCard)return;if(confirm('Удалить карту "'+currentCard.name+'"?')){cards=cards.filter(c=>c.id!==currentCard.id);saveCards();renderCards();closeViewModal();showToast('Карта удалена')}}
+        function saveCards(){localStorage.setItem('cardkeeper_cards',JSON.stringify(cards))}
+        function showToast(m,t=''){toast.textContent=m;toast.className='toast show'+(t?' '+t:'');setTimeout(()=>toast.classList.remove('show'),2500)}
+        function escapeHtml(t){const d=document.createElement('div');d.textContent=t;return d.innerHTML}
+        function formatNum(n){return n.length>24?n.substring(0,12)+'...'+n.substring(n.length-8):n}
+        if('serviceWorker'in navigator)navigator.serviceWorker.register('sw.js').catch(console.error);
     </script>
 </body>
 </html>
